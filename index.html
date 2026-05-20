@@ -754,7 +754,122 @@
 </footer>
 
 <script>
-const courses = [
+// ========================================================
+// إعدادات Google Sheets - فقط غيّر الـ URL لو احتجت
+// ========================================================
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTkMuV3Vc1J54D-4xCRzorTimhpijA-okDVZaAass-czpJ8CZdrF4WdnkUMb2MCiQ/pub?gid=1038272256&single=true&output=csv';
+
+// خريطة الأيقونات حسب الكاتيجوري
+const categoryIcons = {
+  'طب': { icon: '🔬', bg: 'rgba(33,150,243,0.15)' },
+  'تجميل': { icon: '✨', bg: 'rgba(233,30,99,0.15)' },
+  'تغذية': { icon: '🥗', bg: 'rgba(76,175,80,0.15)' },
+  'تقنية': { icon: '💻', bg: 'rgba(0,150,136,0.15)' },
+  'أعمال': { icon: '📊', bg: 'rgba(156,39,176,0.15)' },
+};
+
+// تحويل CSV إلى مصفوفة objects
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  
+  // أول سطر هو الـ headers
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  
+  return lines.slice(1).map((line, idx) => {
+    // تعامل مع الحقول اللي فيها فواصل داخل quotes
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+      } else if (ch === ',' && !inQuotes) {
+        values.push(current.trim());
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    values.push(current.trim());
+
+    const obj = { id: idx + 1 };
+    headers.forEach((h, i) => {
+      obj[h] = (values[i] || '').trim();
+    });
+
+    // تحويل الأسعار لأرقام
+    obj.priceCash    = parseInt(obj.priceCash)    || 0;
+    obj.priceInstall = parseInt(obj.priceInstall) || 0;
+    obj.booking      = parseInt(obj.booking)      || 0;
+
+    // أيقونة تلقائية لو مفيش icon في الشيت
+    if (!obj.icon || obj.icon === '') {
+      const cat = categoryIcons[obj.category] || { icon: '📚', bg: 'rgba(201,168,76,0.15)' };
+      obj.icon   = cat.icon;
+      obj.iconBg = cat.bg;
+    }
+    if (!obj.iconBg || obj.iconBg === '') {
+      const cat = categoryIcons[obj.category] || { icon: '📚', bg: 'rgba(201,168,76,0.15)' };
+      obj.iconBg = cat.bg;
+    }
+
+    return obj;
+  }).filter(c => c.name && c.name !== '');
+}
+
+// ========================================================
+// متغيرات الحالة
+// ========================================================
+let courses = [];
+let currentFilter = 'all';
+let currentSearch = '';
+
+// ========================================================
+// جلب الداتا من Google Sheets
+// ========================================================
+async function loadFromSheet() {
+  const grid = document.getElementById('coursesGrid');
+  const badge = document.getElementById('countBadge');
+  
+  // رسالة تحميل
+  grid.innerHTML = `
+    <div class="empty-state">
+      <div class="e-icon">⏳</div>
+      <h3>جاري تحميل البرامج...</h3>
+      <p>يتم جلب البيانات من Google Sheets</p>
+    </div>`;
+  badge.textContent = 'جاري التحميل...';
+
+  try {
+    // استخدام CORS proxy لتجنب مشكلة CORS مع GitHub Pages
+    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(SHEET_CSV_URL);
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error('فشل في الاتصال');
+    const text = await res.text();
+    courses = parseCSV(text);
+    
+    if (courses.length === 0) throw new Error('لا توجد بيانات في الشيت');
+    
+    // تحديث عداد الـ hero
+    document.querySelector('.stat-num').textContent = courses.length + '+';
+    
+    renderCourses();
+  } catch (err) {
+    console.error('خطأ في تحميل الشيت:', err);
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="e-icon">⚠️</div>
+        <h3>تعذّر تحميل البيانات</h3>
+        <p>تأكد من أن Google Sheet منشور للعموم وأن الاتصال يعمل</p>
+        <p style="font-size:0.75rem;margin-top:0.5rem;color:var(--gold)">${err.message}</p>
+      </div>`;
+    badge.textContent = 'خطأ في التحميل';
+  }
+}
+
+const courses_placeholder = [
   {
     id: 1,
     name: "دبلومة التغذية للأطباء",
@@ -1260,18 +1375,9 @@ const courses = [
     center: ""
   }
 ];
+// نهاية الداتا الثابتة (احتياطية فقط - لن تُستخدم بعد الآن)
 
-const categoryMap = {
-  'all': 'الكل',
-  'طب': 'طب',
-  'تجميل': 'تجميل',
-  'تغذية': 'تغذية',
-  'تقنية': 'تقنية',
-  'أعمال': 'أعمال'
-};
 
-let currentFilter = 'all';
-let currentSearch = '';
 
 function setFilter(filter, btn) {
   currentFilter = filter;
@@ -1446,8 +1552,10 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.getElementById('modalOverlay').classList.remove('open');
 });
 
-// Initial render
-renderCourses();
+// ========================================================
+// تشغيل: جلب الداتا من Google Sheets عند فتح الصفحة
+// ========================================================
+loadFromSheet();
 </script>
 </body>
 </html>
