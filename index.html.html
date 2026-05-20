@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>زويل أكاديمي | الدبلومات والكورسات المتخصصة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #9A7A2E;
+    --navy: #0A1628;
+    --navy-mid: #112240;
+    --navy-light: #1B3460;
+    --white: #F8F6F0;
+    --gray: #8A9BB5;
+    --card-bg: #0F1E38;
+    --border: rgba(201,168,76,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(27,52,96,0.6) 0%, transparent 50%),
+      linear-gradient(160deg, #0A1628 0%, #112240 50%, #0A1628 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(201,168,76,0.03) 60px, rgba(201,168,76,0.03) 61px),
+      repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(201,168,76,0.03) 60px, rgba(201,168,76,0.03) 61px);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.85rem;
+    color: var(--gold-light);
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+    animation: fadeDown 0.8s ease;
+  }
+
+  .hero-logo {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 2rem;
+    box-shadow: 0 20px 60px rgba(201,168,76,0.3);
+    animation: fadeDown 0.6s ease;
+  }
+
+  .hero h1 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.15rem;
+    color: var(--gray);
+    max-width: 550px;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.8s ease 0.4s both;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s ease 0.6s both;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-top: 0.2rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray);
+    font-size: 0.8rem;
+    animation: bounce 2s infinite;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,22,40,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .nav-brand {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--gold);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--gray);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ===== SECTION ===== */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-tag {
+    display: inline-block;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.3rem 1rem;
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+
+  .section-title span { color: var(--gold); }
+
+  .section-sub {
+    color: var(--gray);
+    font-size: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  /* ===== SEARCH & FILTER ===== */
+  .controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1.2rem 0.9rem 3rem;
+    color: var(--white);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    direction: rtl;
+  }
+
+  .search-box input:focus { border-color: var(--gold); }
+
+  .search-box input::placeholder { color: var(--gray); }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    font-size: 1rem;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 0.5rem 1.2rem;
+    color: var(--gray);
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  /* ===== COURSES GRID ===== */
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .course-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .course-card:hover {
+    border-color: rgba(201,168,76,0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(201,168,76,0.1);
+  }
+
+  .course-card:hover::before { opacity: 1; }
+
+  .card-header {
+    padding: 1.5rem 1.5rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .card-category {
+    font-size: 0.72rem;
+    color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 50px;
+    padding: 0.25rem 0.8rem;
+    white-space: nowrap;
+  }
+
+  .card-body { padding: 0 1.5rem 1.5rem; }
+
+  .card-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--gray);
+  }
+
+  .meta-item .icon { color: var(--gold); font-size: 0.9rem; }
+
+  .card-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 1.2rem;
+  }
+
+  .card-pricing {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .price-block {}
+
+  .price-label {
+    font-size: 0.72rem;
+    color: var(--gray);
+    margin-bottom: 0.2rem;
+  }
+
+  .price-main {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--gold);
+  }
+
+  .price-main span {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--gray);
+  }
+
+  .price-install {
+    font-size: 0.78rem;
+    color: var(--gray);
+    margin-top: 0.2rem;
+  }
+
+  .card-btn {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    color: var(--gold);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .card-btn:hover {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    padding: 2rem;
+    overflow-y: auto;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+
+  .modal {
+    background: var(--navy-mid);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 24px;
+    max-width: 700px;
+    width: 100%;
+    margin: auto;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+  }
+
+  .modal-top {
+    background: linear-gradient(135deg, var(--navy-light), var(--navy-mid));
+    padding: 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .modal-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+
+  .modal-close {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(201,168,76,0.2); color: var(--gold); }
+
+  .modal-body { padding: 2rem; }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  .info-card-label {
+    font-size: 0.72rem;
+    color: var(--gray);
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .info-card-value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--white);
+  }
+
+  .info-card-value.gold { color: var(--gold); font-family: 'Tajawal', sans-serif; font-size: 1.2rem; }
+
+  .section-block {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-block-title {
+    font-size: 0.8rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-block-content {
+    color: var(--gray);
+    font-size: 0.9rem;
+    line-height: 1.8;
+    white-space: pre-line;
+  }
+
+  .tags-wrap {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .tag {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 50px;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.78rem;
+    color: var(--gold-light);
+  }
+
+  .modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 2rem;
+    color: var(--navy);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.8rem 1.5rem;
+    color: var(--gray);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--navy-mid);
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  footer .f-logo {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  footer p { color: var(--gray); font-size: 0.85rem; line-height: 1.8; }
+
+  /* ===== EMPTY ===== */
+  .empty-state {
+    text-align: center;
+    padding: 4rem;
+    color: var(--gray);
+    grid-column: 1/-1;
+  }
+
+  .empty-state .e-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .empty-state h3 { font-size: 1.2rem; color: var(--white); margin-bottom: 0.5rem; }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes bounce { 0%,100% { transform:translateX(-50%) translateY(0); } 50% { transform:translateX(-50%) translateY(-8px); } }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .courses-grid { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .modal-overlay { padding: 1rem; }
+    .hero-stats { gap: 1.5rem; }
+  }
+
+  /* Count badge */
+  .count-badge {
+    display: inline-block;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 0.3rem 1rem;
+    font-size: 0.82rem;
+    color: var(--gold);
+    margin-bottom: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">⚡ زويل أكاديمي</div>
+  <ul class="nav-links">
+    <li><a href="#courses">الكورسات</a></li>
+    <li><a href="#about">عن الأكاديمية</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🎓 أكاديمية زويل للتعليم المتخصص</div>
+  <div class="hero-logo">🎓</div>
+  <h1>تعلّم من <span>الأفضل</span><br>وابنِ مستقبلك</h1>
+  <p>دبلومات وكورسات متخصصة معتمدة في مجالات الطب والتجميل والتغذية والتكنولوجيا وأكثر</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">21+</div><div class="stat-label">برنامج متخصص</div></div>
+    <div class="stat"><div class="stat-num">8+</div><div class="stat-label">مجال دراسي</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">شهادات معتمدة</div></div>
+    <div class="stat"><div class="stat-num">أونلاين</div><div class="stat-label">وحضوري</div></div>
+  </div>
+  <div class="scroll-hint">
+    <span>استكشف البرامج</span>
+    <span>↓</span>
+  </div>
+</div>
+
+<!-- COURSES SECTION -->
+<section id="courses">
+  <div class="section-header">
+    <div class="section-tag">البرامج التعليمية</div>
+    <h2 class="section-title">كل <span>الدبلومات</span> والكورسات</h2>
+    <p class="section-sub">اختر مجالك وابدأ رحلتك مع شهادة معتمدة تفتح لك أبواب التميز</p>
+  </div>
+
+  <div class="controls">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="ابحث عن كورس أو دبلومة..." oninput="filterCourses()">
+    </div>
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-btn active" onclick="setFilter('all', this)">الكل</button>
+      <button class="filter-btn" onclick="setFilter('طب', this)">🏥 طب وصحة</button>
+      <button class="filter-btn" onclick="setFilter('تجميل', this)">✨ تجميل</button>
+      <button class="filter-btn" onclick="setFilter('تغذية', this)">🥗 تغذية</button>
+      <button class="filter-btn" onclick="setFilter('تقنية', this)">💻 تقنية</button>
+      <button class="filter-btn" onclick="setFilter('أعمال', this)">📊 أعمال</button>
+    </div>
+  </div>
+
+  <div class="count-badge" id="countBadge">عرض 21 برنامج</div>
+
+  <div class="courses-grid" id="coursesGrid"></div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <div class="modal-top">
+      <div>
+        <div id="modalCategory" style="font-size:0.8rem;color:var(--gold);margin-bottom:0.5rem;"></div>
+        <div class="modal-title" id="modalTitle"></div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="document.getElementById('modalOverlay').classList.remove('open')">إغلاق</button>
+      <button class="btn-primary">📞 تسجيل الآن</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">زويل أكاديمي</div>
+  <p>أكاديمية متخصصة في التعليم المهني والتدريب المتخصص<br>شهادات معتمدة • محاضرون متخصصون • تدريب عملي ونظري</p>
+</footer>
+
+<script>
+const courses = [
+  {
+    id: 1,
+    name: "دبلومة التغذية للأطباء",
+    category: "تغذية",
+    icon: "🥗",
+    iconBg: "rgba(76,175,80,0.15)",
+    duration: "3 شهور",
+    lectures: "25 محاضرة",
+    priceCash: 5000,
+    priceInstall: 6000,
+    booking: 500,
+    priceUSD: "170 دولار",
+    installments: "3 أقساط (2500 + 1900 + 1100)",
+    location: "طنطا + الجيزة + الإسكندرية",
+    studyOnline: "أونلاين على زوم – الأحد والأربعاء – 9 مساءاً",
+    instructors: "د. دعاء – د. محمد سعيد – د. أحمد جاد – د. وفاء ذكي",
+    target: "الكليات العلمية الطبية – جميع المؤهلات العليا",
+    title: "أخصائي / فني تغذية",
+    certZewail: "شهادة الأكاديمية بمسمى الدبلومة – 130 ساعة تدريبية + كارنيه",
+    certExternal: "شهادة جامعة طنطا – شهادة خبرة وزارة العدل – كارنيه اللجنة النقابية",
+    content: "تغذية الأطفال – الرياضيين – السمنة والنحافة – الحوامل والمرضع – وضع الأنظمة الغذائية",
+    practical: "تدريب على أجهزة الكرايو والكافيتشن – حقن ميزوثيرابي – تجهيز العيادات",
+    center: "مركز صحة ولياقة بدنية متاح فيه كتابة أنظمة غذائية ومتابعة الحالات"
+  },
+  {
+    id: 2,
+    name: "دبلومة تحاليل طبية",
+    category: "طب",
+    icon: "🔬",
+    iconBg: "rgba(33,150,243,0.15)",
+    duration: "شهر",
+    lectures: "12 محاضرة",
+    priceCash: 2000,
+    priceInstall: 2500,
+    booking: 500,
+    priceUSD: "100 دولار",
+    installments: "قسطين (1100 + 900)",
+    location: "الجيزة – الإسكندرية – طنطا – المنصورة",
+    studyOnline: "أونلاين على زوم أو في المقر – حسب الاتفاق",
+    instructors: "د. محمد سعيد (أونلاين) + محاضرين حسب الفرع",
+    target: "طب وصيدلة وعلوم – بيطري وزراعة – تربية (كيمياء أو بيولوجي) – معهد فني صحي",
+    title: "مساعد تحاليل طبية",
+    certZewail: "شهادة معتمدة من زويل أكاديمي + كارنيه ببرنامج الكورس",
+    certExternal: "شهادة جامعة طنطا",
+    content: "سحب العينات – استقبال المريض – قراءة الروشتات – التحاليل اليدوية",
+    practical: "التدريب على أجهزة العمل – التحاليل بصورة يدوية",
+    center: ""
+  },
+  {
+    id: 3,
+    name: "دبلومة جودة شاملة",
+    category: "أعمال",
+    icon: "📊",
+    iconBg: "rgba(156,39,176,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 4500,
+    priceInstall: 5500,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين وحضوري",
+    studyOnline: "أونلاين على زوم",
+    instructors: "محاضرون متخصصون",
+    target: "المهتمون بإدارة الجودة والتميز المؤسسي",
+    title: "أخصائي جودة شاملة",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "شهادة جامعة طنطا",
+    content: "مبادئ الجودة الشاملة – ISO – إدارة العمليات – التحسين المستمر",
+    practical: "تطبيقات عملية على مشاريع حقيقية",
+    center: ""
+  },
+  {
+    id: 4,
+    name: "دبلومة طب تجميلي لا جراحي",
+    category: "تجميل",
+    icon: "💉",
+    iconBg: "rgba(233,30,99,0.15)",
+    duration: "شهرين",
+    lectures: "-",
+    priceCash: 10000,
+    priceInstall: 12000,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "فروع الأكاديمية",
+    studyOnline: "نظري أونلاين + عملي حضوري",
+    instructors: "أطباء متخصصون في التجميل",
+    target: "أطباء وطالبو طب البشري",
+    title: "طبيب تجميل لا جراحي",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "حقن البوتوكس – الفيلر – الليزر – العلاجات الجلدية",
+    practical: "تدريب عملي على حالات حقيقية تحت إشراف طبي",
+    center: ""
+  },
+  {
+    id: 5,
+    name: "دبلومة ليزر وتجميل",
+    category: "تجميل",
+    icon: "✨",
+    iconBg: "rgba(255,152,0,0.15)",
+    duration: "3 أسابيع",
+    lectures: "-",
+    priceCash: 4000,
+    priceInstall: 5000,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "فروع الأكاديمية",
+    studyOnline: "نظري أونلاين + عملي حضوري",
+    instructors: "متخصصون في الليزر والتجميل",
+    target: "خريجو كليات الطب والصيدلة والعلوم",
+    title: "أخصائي ليزر وتجميل",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "أجهزة الليزر – علاج البشرة – إزالة الشعر – تجديد الخلايا",
+    practical: "تدريب عملي على أحدث أجهزة الليزر",
+    center: ""
+  },
+  {
+    id: 6,
+    name: "ماجستير تجميل لا جراحي",
+    category: "تجميل",
+    icon: "🏆",
+    iconBg: "rgba(201,168,76,0.15)",
+    duration: "8-10 شهور",
+    lectures: "-",
+    priceCash: 0,
+    priceInstall: 0,
+    booking: 500,
+    priceUSD: "350 دولار",
+    installments: "أقساط",
+    location: "فروع الأكاديمية",
+    studyOnline: "نظري أونلاين + عملي حضوري",
+    instructors: "أطباء وأساتذة متخصصون",
+    target: "الأطباء وخريجو الكليات الطبية",
+    title: "ماجستير تجميل لا جراحي",
+    certZewail: "شهادة الماجستير من زويل أكاديمي",
+    certExternal: "اعتمادات دولية",
+    content: "برنامج شامل في التجميل اللاجراحي – بوتوكس – فيلر – خيوط – ليزر – PRP",
+    practical: "تدريب مكثف على حالات متنوعة",
+    center: ""
+  },
+  {
+    id: 7,
+    name: "ماستر تركيبات أسنان",
+    category: "طب",
+    icon: "🦷",
+    iconBg: "rgba(0,188,212,0.15)",
+    duration: "8-10 شهور",
+    lectures: "-",
+    priceCash: 0,
+    priceInstall: 0,
+    booking: 500,
+    priceUSD: "300 دولار",
+    installments: "أقساط",
+    location: "فروع الأكاديمية",
+    studyOnline: "نظري أونلاين + عملي حضوري",
+    instructors: "أطباء أسنان متخصصون",
+    target: "أطباء الأسنان وطلاب طب الأسنان",
+    title: "ماستر تركيبات أسنان",
+    certZewail: "شهادة الماستر من زويل أكاديمي",
+    certExternal: "اعتمادات دولية",
+    content: "التركيبات الثابتة والمتحركة – الزراعة – التجميل السني",
+    practical: "تدريب عملي مكثف في مختبرات متخصصة",
+    center: ""
+  },
+  {
+    id: 8,
+    name: "ماستر تغذية متقدمة",
+    category: "تغذية",
+    icon: "🌿",
+    iconBg: "rgba(76,175,80,0.15)",
+    duration: "8-10 شهور",
+    lectures: "-",
+    priceCash: 0,
+    priceInstall: 0,
+    booking: 500,
+    priceUSD: "300 دولار",
+    installments: "أقساط",
+    location: "أونلاين",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في التغذية العلاجية",
+    target: "أخصائيو التغذية والكليات الطبية",
+    title: "ماستر تغذية متقدمة",
+    certZewail: "شهادة الماستر من زويل أكاديمي",
+    certExternal: "اعتمادات دولية",
+    content: "التغذية العلاجية المتقدمة – الأمراض المزمنة – التغذية الرياضية المتقدمة",
+    practical: "دراسات حالة وتطبيقات سريرية",
+    center: ""
+  },
+  {
+    id: 9,
+    name: "دبلومة عناية بالشعر",
+    category: "تجميل",
+    icon: "💇",
+    iconBg: "rgba(233,30,99,0.15)",
+    duration: "شهر ونصف",
+    lectures: "-",
+    priceCash: 4000,
+    priceInstall: 5000,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "فروع الأكاديمية",
+    studyOnline: "نظري أونلاين + عملي حضوري",
+    instructors: "متخصصون في تريكولوجي",
+    target: "المهتمون بمجال العناية بالشعر",
+    title: "أخصائي عناية بالشعر",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "علاج تساقط الشعر – الحقن – الليزر – الميزوثيرابي للشعر",
+    practical: "تدريب عملي في مراكز متخصصة",
+    center: ""
+  },
+  {
+    id: 10,
+    name: "دبلومة عناية بالبشرة",
+    category: "تجميل",
+    icon: "🌸",
+    iconBg: "rgba(255,87,34,0.15)",
+    duration: "شهر ونصف",
+    lectures: "-",
+    priceCash: 4000,
+    priceInstall: 5000,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "فروع الأكاديمية",
+    studyOnline: "نظري أونلاين + عملي حضوري",
+    instructors: "متخصصون في الأمراض الجلدية",
+    target: "المهتمون بمجال العناية بالبشرة والتجميل",
+    title: "أخصائي عناية بالبشرة",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "تحليل البشرة – البروتوكولات العلاجية – الحماية من الشمس – مكافحة الشيخوخة",
+    practical: "تدريب عملي على أجهزة وبروتوكولات متخصصة",
+    center: ""
+  },
+  {
+    id: 11,
+    name: "دبلومة تركيبات أسنان",
+    category: "طب",
+    icon: "🦷",
+    iconBg: "rgba(0,188,212,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 4500,
+    priceInstall: 5500,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "فروع الأكاديمية",
+    studyOnline: "نظري أونلاين + عملي حضوري",
+    instructors: "أطباء أسنان متخصصون",
+    target: "طلاب وخريجو طب الأسنان",
+    title: "فني تركيبات أسنان",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "شهادة جامعة طنطا",
+    content: "التركيبات الكاملة والجزئية – الإطارات المعدنية – الزركونيا",
+    practical: "تدريب عملي في مختبرات الأسنان",
+    center: ""
+  },
+  {
+    id: 12,
+    name: "تركيبات أسنان متقدمة",
+    category: "طب",
+    icon: "⭐",
+    iconBg: "rgba(201,168,76,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 5000,
+    priceInstall: 6000,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "فروع الأكاديمية",
+    studyOnline: "نظري أونلاين + عملي حضوري",
+    instructors: "أطباء أسنان متخصصون",
+    target: "خريجو دبلومة التركيبات الأساسية",
+    title: "أخصائي تركيبات متقدمة",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "CAD/CAM – الطباعة ثلاثية الأبعاد – الزراعة المتقدمة",
+    practical: "تدريب على أحدث تقنيات التركيبات الرقمية",
+    center: ""
+  },
+  {
+    id: 13,
+    name: "دبلومة تخاطب وتعديل سلوك",
+    category: "طب",
+    icon: "🗣️",
+    iconBg: "rgba(63,81,181,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 3000,
+    priceInstall: 3800,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين وحضوري",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في علم التخاطب",
+    target: "المهتمون بمجال التخاطب وتعديل السلوك",
+    title: "أخصائي تخاطب",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "اضطرابات النطق واللغة – التوحد – صعوبات التعلم – التدخل المبكر",
+    practical: "تدريب عملي مع حالات حقيقية",
+    center: ""
+  },
+  {
+    id: 14,
+    name: "دبلومة صحة نفسية",
+    category: "طب",
+    icon: "🧠",
+    iconBg: "rgba(103,58,183,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 3000,
+    priceInstall: 3800,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين وحضوري",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في الصحة النفسية",
+    target: "المهتمون بمجال الصحة النفسية والإرشاد النفسي",
+    title: "أخصائي صحة نفسية",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "الاضطرابات النفسية – العلاج المعرفي السلوكي – الإرشاد الأسري",
+    practical: "حالات تطبيقية وإشراف سريري",
+    center: ""
+  },
+  {
+    id: 15,
+    name: "دبلومة طب تكميلي",
+    category: "طب",
+    icon: "🌿",
+    iconBg: "rgba(76,175,80,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 4000,
+    priceInstall: 5000,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين وحضوري",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في الطب التكميلي",
+    target: "الكليات الطبية والمهتمون بالطب البديل",
+    title: "أخصائي طب تكميلي",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "الأعشاب الطبية – الوخز بالإبر – العلاج الطبيعي البديل – الكوبينج",
+    practical: "تطبيق عملي تحت إشراف متخصص",
+    center: ""
+  },
+  {
+    id: 16,
+    name: "دبلومة سلامة غذاء",
+    category: "تغذية",
+    icon: "🛡️",
+    iconBg: "rgba(255,152,0,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 4500,
+    priceInstall: 5500,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين وحضوري",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في سلامة الغذاء",
+    target: "العاملون في الصناعات الغذائية والفندقة",
+    title: "أخصائي سلامة غذاء",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "شهادة ISO 22000",
+    content: "HACCP – سلامة الغذاء – الميكروبيولوجيا الغذائية – التشريعات الغذائية",
+    practical: "تطبيق على مشاريع غذائية حقيقية",
+    center: ""
+  },
+  {
+    id: 17,
+    name: "دبلومة إدارة أعمال",
+    category: "أعمال",
+    icon: "💼",
+    iconBg: "rgba(96,125,139,0.15)",
+    duration: "شهرين ونصف",
+    lectures: "-",
+    priceCash: 3500,
+    priceInstall: 4500,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في إدارة الأعمال",
+    target: "رجال الأعمال والموظفون الراغبون في التطور",
+    title: "أخصائي إدارة أعمال",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات خارجية",
+    content: "إدارة المشاريع – التخطيط الاستراتيجي – إدارة الموارد البشرية – المالية",
+    practical: "دراسات حالة ومشاريع تطبيقية",
+    center: ""
+  },
+  {
+    id: 18,
+    name: "دبلومة ديجيتال ماركتينج",
+    category: "تقنية",
+    icon: "📱",
+    iconBg: "rgba(33,150,243,0.15)",
+    duration: "شهرين ونصف",
+    lectures: "-",
+    priceCash: 3000,
+    priceInstall: 3800,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في التسويق الرقمي",
+    target: "المهتمون بالتسويق الرقمي وإدارة السوشيال ميديا",
+    title: "أخصائي تسويق رقمي",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتماد Google",
+    content: "SEO – إعلانات جوجل وميتا – Content Marketing – Analytics",
+    practical: "إدارة حملات إعلانية حقيقية",
+    center: ""
+  },
+  {
+    id: 19,
+    name: "دبلومة TOT مدرب معتمد",
+    category: "أعمال",
+    icon: "🎯",
+    iconBg: "rgba(255,87,34,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 1500,
+    priceInstall: 2000,
+    booking: 300,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين",
+    studyOnline: "أونلاين على زوم",
+    instructors: "مدربون معتمدون دولياً",
+    target: "المدربون وراغبو الحصول على شهادة TOT",
+    title: "مدرب معتمد TOT",
+    certZewail: "شهادة TOT معتمدة من زويل أكاديمي",
+    certExternal: "شهادة TOT معتمدة دولياً",
+    content: "مهارات التدريب – تصميم البرامج التدريبية – قياس الأثر التدريبي",
+    practical: "جلسات تدريبية تطبيقية",
+    center: ""
+  },
+  {
+    id: 20,
+    name: "دبلومة الذكاء الاصطناعي AI",
+    category: "تقنية",
+    icon: "🤖",
+    iconBg: "rgba(0,150,136,0.15)",
+    duration: "شهرين",
+    lectures: "-",
+    priceCash: 3500,
+    priceInstall: 4500,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في الذكاء الاصطناعي",
+    target: "المهتمون بالتقنية والذكاء الاصطناعي",
+    title: "أخصائي ذكاء اصطناعي",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات تقنية",
+    content: "مبادئ AI – Machine Learning – ChatGPT & Tools – تطبيقات عملية",
+    practical: "مشاريع AI حقيقية",
+    center: ""
+  },
+  {
+    id: 21,
+    name: "دبلومة تحليل بيانات",
+    category: "تقنية",
+    icon: "📈",
+    iconBg: "rgba(63,81,181,0.15)",
+    duration: "3 شهور",
+    lectures: "-",
+    priceCash: 4000,
+    priceInstall: 5000,
+    booking: 500,
+    priceUSD: "",
+    installments: "أقساط",
+    location: "أونلاين",
+    studyOnline: "أونلاين على زوم",
+    instructors: "متخصصون في علم البيانات",
+    target: "المهتمون بتحليل البيانات واتخاذ القرارات",
+    title: "محلل بيانات",
+    certZewail: "شهادة معتمدة من زويل أكاديمي",
+    certExternal: "اعتمادات تقنية",
+    content: "Excel Advanced – Power BI – Python – إحصاء تطبيقي",
+    practical: "مشاريع تحليل بيانات حقيقية",
+    center: ""
+  }
+];
+
+const categoryMap = {
+  'all': 'الكل',
+  'طب': 'طب',
+  'تجميل': 'تجميل',
+  'تغذية': 'تغذية',
+  'تقنية': 'تقنية',
+  'أعمال': 'أعمال'
+};
+
+let currentFilter = 'all';
+let currentSearch = '';
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCourses();
+}
+
+function filterCourses() {
+  currentSearch = document.getElementById('searchInput').value.trim();
+  renderCourses();
+}
+
+function getFiltered() {
+  return courses.filter(c => {
+    const matchFilter = currentFilter === 'all' || c.category === currentFilter;
+    const matchSearch = !currentSearch || 
+      c.name.includes(currentSearch) || 
+      c.category.includes(currentSearch) ||
+      c.content.includes(currentSearch) ||
+      c.target.includes(currentSearch);
+    return matchFilter && matchSearch;
+  });
+}
+
+function formatPrice(p) {
+  if (!p) return '-';
+  return p.toLocaleString('ar-EG') + ' جنيه';
+}
+
+function renderCourses() {
+  const filtered = getFiltered();
+  const grid = document.getElementById('coursesGrid');
+  const badge = document.getElementById('countBadge');
+  
+  badge.textContent = `عرض ${filtered.length} برنامج`;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="e-icon">🔍</div>
+        <h3>لا توجد نتائج</h3>
+        <p>جرب كلمة بحث مختلفة أو غير الفلتر</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(c => `
+    <div class="course-card" onclick="openModal(${c.id})">
+      <div class="card-header">
+        <div class="card-icon" style="background:${c.iconBg}">${c.icon}</div>
+        <div class="card-category">${c.category}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${c.name}</div>
+        <div class="card-meta">
+          <div class="meta-item"><span class="icon">⏱️</span>${c.duration}</div>
+          ${c.lectures !== '-' ? `<div class="meta-item"><span class="icon">📚</span>${c.lectures}</div>` : ''}
+          <div class="meta-item"><span class="icon">📍</span>${c.location.split('–')[0].trim()}</div>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-pricing">
+          <div class="price-block">
+            <div class="price-label">السعر الكاش</div>
+            <div class="price-main">
+              ${c.priceCash ? c.priceCash.toLocaleString('ar-EG') : c.priceUSD}
+              <span>${c.priceCash ? 'جنيه' : ''}</span>
+            </div>
+            <div class="price-install">تقسيط: ${c.priceInstall ? c.priceInstall.toLocaleString('ar-EG') + ' جنيه' : c.priceUSD}</div>
+          </div>
+          <button class="card-btn">التفاصيل ←</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModal(id) {
+  const c = courses.find(x => x.id === id);
+  if (!c) return;
+
+  document.getElementById('modalCategory').textContent = `${c.icon} ${c.category}`;
+  document.getElementById('modalTitle').textContent = c.name;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label">⏱️ مدة البرنامج</div>
+        <div class="info-card-value">${c.duration}</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">💰 سعر الكاش</div>
+        <div class="info-card-value gold">${c.priceCash ? c.priceCash.toLocaleString('ar-EG') + ' جنيه' : c.priceUSD}</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">💳 سعر التقسيط</div>
+        <div class="info-card-value">${c.priceInstall ? c.priceInstall.toLocaleString('ar-EG') + ' جنيه' : c.priceUSD}</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">📌 قيمة الحجز</div>
+        <div class="info-card-value">${c.booking.toLocaleString('ar-EG')} جنيه</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-block-title">📋 نظام الأقساط</div>
+      <div class="section-block-content">${c.installments}</div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-block-title">📍 مكان الدراسة</div>
+      <div class="section-block-content">${c.location}</div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-block-title">💻 نظام الدراسة الأونلاين</div>
+      <div class="section-block-content">${c.studyOnline}</div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-block-title">👨‍🏫 المحاضرون</div>
+      <div class="section-block-content">${c.instructors}</div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-block-title">📚 المحتوى العلمي</div>
+      <div class="section-block-content">${c.content}</div>
+    </div>
+
+    ${c.practical ? `
+    <div class="section-block">
+      <div class="section-block-title">🔬 التدريب العملي</div>
+      <div class="section-block-content">${c.practical}</div>
+    </div>` : ''}
+
+    <div class="section-block">
+      <div class="section-block-title">🎓 الشهادات والاعتمادات</div>
+      <div class="section-block-content">${c.certZewail}</div>
+      ${c.certExternal ? `<div class="tags-wrap">
+        ${c.certExternal.split('–').map(t => `<span class="tag">✓ ${t.trim()}</span>`).join('')}
+      </div>` : ''}
+    </div>
+
+    <div class="section-block">
+      <div class="section-block-title">🎯 الفئة المستهدفة</div>
+      <div class="section-block-content">${c.target}</div>
+    </div>
+
+    ${c.title ? `
+    <div class="section-block">
+      <div class="section-block-title">📜 المسمى الوظيفي بعد التخرج</div>
+      <div class="section-block-content">${c.title}</div>
+    </div>` : ''}
+
+    ${c.center ? `
+    <div class="section-block">
+      <div class="section-block-title">🏥 مواصفات المركز</div>
+      <div class="section-block-content">${c.center}</div>
+    </div>` : ''}
+  `;
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('modalOverlay').classList.remove('open');
+});
+
+// Initial render
+renderCourses();
+</script>
+</body>
+</html>
