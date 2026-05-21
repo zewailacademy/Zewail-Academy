@@ -3254,7 +3254,7 @@ function processExcelData(uint8) {
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
 
     // الصف 4 هو أول صف بيانات (index 3) - تخطي صفوف التعليمات والمثال
-    const dataRows = rows.slice(3).filter(row => row[0] && String(row[0]).trim() !== '');
+    const dataRows = rows.slice(4).filter(row => row[0] && String(row[0]).trim() !== '');
 
     if (dataRows.length === 0) {
       showToast('مفيش بيانات في الملف! تأكد إنك حذفت صف المثال وضفت بيانات', true);
@@ -3294,24 +3294,49 @@ function processExcelData(uint8) {
         };
       };
 
+      // R-V: 5 installments (index 17-21)
       const installments = [
-        parseInstallment(row[17]), // R
-        parseInstallment(row[18]), // S
-        parseInstallment(row[19]), // T
-        parseInstallment(row[20]), // U
+        parseInstallment(row[17]),
+        parseInstallment(row[18]),
+        parseInstallment(row[19]),
+        parseInstallment(row[20]),
+        parseInstallment(row[21]),
       ].filter(Boolean);
 
+      // AG-AL: 6 lecturers (index 32-37)
       const lecturers = [
-        parseLecturer(row[31]), // AF
-        parseLecturer(row[32]), // AG
-        parseLecturer(row[33]), // AH
+        parseLecturer(row[32]),
+        parseLecturer(row[33]),
+        parseLecturer(row[34]),
+        parseLecturer(row[35]),
+        parseLecturer(row[36]),
+        parseLecturer(row[37]),
       ].filter(i => i && i.name);
 
+      // AN-AR: 5 external accreds (index 39-43)
       const externalAccred = [
-        parseAccred(row[35]), // AJ
-        parseAccred(row[36]), // AK
-        parseAccred(row[37]), // AL
+        parseAccred(row[39]),
+        parseAccred(row[40]),
+        parseAccred(row[41]),
+        parseAccred(row[42]),
+        parseAccred(row[43]),
       ].filter(i => i && i.name);
+
+      // Column mapping (0-indexed):
+      // A=0 name, B=1 booking, C=2 priceEgypt, D=3 priceForeign, E=4 priceUSD
+      // F=5 duration, G=6 lectures
+      // H=7 earlyBooking, I=8 introDate, J=9 mainDate
+      // K=10 courseFile, L=11 affiliate, M=12 schedule, N=13 lastIntro
+      // O=14 practicalSample, P=15 feedback, Q=16 graduation
+      // R-V=17-21 installments (5)
+      // W=22 theoryMode, X=23 day, Y=24 time, Z=25 duration, AA=26 structure
+      // AB=27 practicalLocation, AC=28 practicalTime, AD=29 practicalLectures
+      // AE=30 practicalDuration, AF=31 practicalContent
+      // AG-AL=32-37 lecturers (6)
+      // AM=38 zewailAccred
+      // AN-AR=39-43 externalAccred (5)
+      // AS=44 targetAudience, AT=45 specialist, AU=46 technician
+      // AV=47 centerLicense, AW=48 generalNotes
 
       const course = {
         id: maxId + idx + 1,
@@ -3334,29 +3359,29 @@ function processExcelData(uint8) {
         graduationLink: String(row[16] || '').trim(),
         installments,
         theory: {
-          mode: String(row[21] || '').trim(),
-          day: String(row[22] || '').trim(),
-          time: String(row[23] || '').trim(),
-          duration: String(row[24] || '').trim(),
-          structure: String(row[25] || '').trim(),
+          mode: String(row[22] || '').trim(),
+          day: String(row[23] || '').trim(),
+          time: String(row[24] || '').trim(),
+          duration: String(row[25] || '').trim(),
+          structure: String(row[26] || '').trim(),
         },
         practical: {
-          location: String(row[26] || '').trim(),
-          time: String(row[27] || '').trim(),
-          lectures: String(row[28] || '').trim(),
-          duration: String(row[29] || '').trim(),
-          content: String(row[30] || '').trim(),
+          location: String(row[27] || '').trim(),
+          time: String(row[28] || '').trim(),
+          lectures: String(row[29] || '').trim(),
+          duration: String(row[30] || '').trim(),
+          content: String(row[31] || '').trim(),
         },
         lecturers,
-        zewailAccred: String(row[34] || '').trim(),
+        zewailAccred: String(row[38] || '').trim(),
         externalAccred,
-        targetAudience: String(row[38] || '').trim(),
+        targetAudience: String(row[44] || '').trim(),
         syndicate: {
-          specialist: String(row[39] || '').trim(),
-          technician: String(row[40] || '').trim(),
+          specialist: String(row[45] || '').trim(),
+          technician: String(row[46] || '').trim(),
         },
-        centerLicense: String(row[41] || '').trim(),
-        generalNotes: String(row[42] || '').trim(),
+        centerLicense: String(row[47] || '').trim(),
+        generalNotes: String(row[48] || '').trim(),
         departments: [],
       };
 
