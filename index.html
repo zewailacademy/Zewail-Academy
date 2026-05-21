@@ -1435,48 +1435,41 @@ window.firebaseDeleteUser = async function(uid, email) {
     if (email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
       return { success: false, error: 'لا يمكن حذف المالك' };
     }
-    // احذفه من قائمة المستخدمين
-    await remove(ref(db, 'zewail_users/' + uid));
-    // أضفه لقائمة المحظورين
-    const bannedKey = email.toLowerCase().replace(/[.@]/g, '_');
-    await set(ref(db, 'zewail_banned/' + bannedKey), {
-      email: email.toLowerCase(),
-      bannedAt: Date.now()
-    });
+    // بدل الحذف - نحط banned:true في نفس record المستخدم
+    const snap = await get(ref(db, 'zewail_users/' + uid));
+    const oldData = snap.exists() ? snap.val() : { email: email, uid: uid, role: 'admin' };
+    await set(ref(db, 'zewail_users/' + uid), { ...oldData, banned: true, bannedAt: Date.now() });
     return { success: true };
   } catch(e) {
-    return { success: false, error: 'خطأ في الحذف: ' + e.message };
+    return { success: false, error: 'خطأ: ' + e.message };
   }
 };
 
-// فحص لو الإيميل محظور
+// فحص لو الإيميل محظور - من zewail_users نفسه
 window.firebaseCheckBanned = async function(email) {
   try {
-    const bannedKey = email.toLowerCase().replace(/[.@]/g, '_');
-    const snap = await get(ref(db, 'zewail_banned/' + bannedKey));
-    return snap.exists();
+    const snap = await get(ref(db, 'zewail_users'));
+    if (!snap.exists()) return false;
+    const users = Object.values(snap.val());
+    const user = users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+    return user ? (user.banned === true) : false;
   } catch(e) { return false; }
 };
 
-// جلب كل المحظورين
-window.firebaseGetBanned = async function() {
+// رفع الحظر - بيرجع المستخدم نشط تاني
+window.firebaseUnbanUser = async function(uid) {
   try {
-    const snap = await get(ref(db, 'zewail_banned'));
-    if (!snap.exists()) return [];
-    return Object.values(snap.val());
-  } catch(e) { return []; }
-};
-
-// رفع الحظر عن مستخدم
-window.firebaseUnbanUser = async function(email) {
-  try {
-    const bannedKey = email.toLowerCase().replace(/[.@]/g, '_');
-    await remove(ref(db, 'zewail_banned/' + bannedKey));
+    const snap = await get(ref(db, 'zewail_users/' + uid));
+    if (!snap.exists()) return { success: false, error: 'مش لاقي المستخدم' };
+    const data = snap.val();
+    delete data.banned;
+    delete data.bannedAt;
+    await set(ref(db, 'zewail_users/' + uid), data);
     return { success: true };
   } catch(e) { return { success: false, error: e.message }; }
 };
 
-// تعديل بيانات مستخدم + حفظ الباسورد الجديد
+
 window.firebaseUpdateUser = async function(uid, email, newEmail, newPassword, role, currentUserEmail) {
   try {
     const isOwnerRow = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
@@ -1805,17 +1798,15 @@ function toggleEditUserPwd() { const i = document.getElementById('editUserPasswo
 async function loadUsersList() {
   const container = document.getElementById('usersListContainer');
   container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-soft)">جاري التحميل...</div>';
-  const users = await window.firebaseGetUsers();
-  // جيب المحظورين
-  let bannedUsers = [];
-  try {
-    const snap = await window.firebaseGetBanned();
-    bannedUsers = snap || [];
-  } catch(e) {}
-
-  if (!users || users.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px">لا يوجد مستخدمين</div>'; return; }
-  let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:Tajawal,sans-serif">';
+  const allUsers = await window.firebaseGetUsers();
+  if (!allUsers || allUsers.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px">لا يوجد مستخدمين</div>'; return; }
+  const activeUsers = allUsers.filter(u => !u.banned);
+  const bannedUsers = allUsers.filter(u => u.banned);
+  let html = '';
+  // المستخدمين النشطين
+  html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:Tajawal,sans-serif">';
   html += '<thead><tr style="background:var(--bg);color:white"><th style="padding:10px;text-align:right">الإيميل</th><th style="padding:10px">الصلاحية</th><th style="padding:10px">إجراءات</th></tr></thead><tbody>';
+  const users = activeUsers;
   users.forEach(u => {
     const isOwnerRow = u.email.toLowerCase() === OWNER_EMAIL_LOCAL;
     const ownerBadge = isOwnerRow ? ' <span style="background:gold;color:#333;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">👑 مالك</span>' : '';
@@ -1830,29 +1821,32 @@ async function loadUsersList() {
 
   // قسم المحظورين
   if (bannedUsers.length > 0) {
-    html += '<div style="margin-top:16px"><h4 style="color:var(--red);margin-bottom:8px;font-family:Tajawal,sans-serif">🚫 المحظورون (لا يمكنهم تسجيل الدخول)</h4>';
+    html += '</tbody></table></div>';
+    html += '<div style="margin-top:16px"><h4 style="color:var(--red);margin-bottom:8px;font-family:Tajawal,sans-serif;font-size:15px">🚫 المحظورون</h4>';
     html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:Tajawal,sans-serif">';
-    html += '<thead><tr style="background:var(--red);color:white"><th style="padding:8px;text-align:right">الإيميل</th><th style="padding:8px">رفع الحظر</th></tr></thead><tbody>';
-    bannedUsers.forEach(b => {
-      html += `<tr style="border-bottom:1px solid var(--line)">
-        <td style="padding:10px;direction:ltr;text-align:left;color:var(--red)">${b.email}</td>
+    html += '<thead><tr style="background:var(--red);color:white"><th style="padding:8px;text-align:right">الإيميل</th><th style="padding:8px">الصلاحية</th><th style="padding:8px">رفع الحظر</th></tr></thead><tbody>';
+    bannedUsers.forEach(u => {
+      html += `<tr style="border-bottom:1px solid var(--line);background:#fff5f5">
+        <td style="padding:10px;direction:ltr;text-align:left;color:var(--red)">${u.email}</td>
+        <td style="padding:10px;text-align:center">${u.role==='admin'?'👨‍💼 أدمن':u.role}</td>
         <td style="padding:10px;text-align:center">
-          <button onclick="unbanUser('${b.email}')" style="background:var(--green);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px">✅ رفع الحظر</button>
+          <button onclick="unbanUser('${u.uid}')" style="background:var(--green);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px">✅ رفع الحظر</button>
         </td>
       </tr>`;
     });
     html += '</tbody></table></div></div>';
+  } else {
+    html += '</tbody></table></div>';
   }
 
   container.innerHTML = html;
 }
 
-async function unbanUser(email) {
-  if (!confirm(`رفع الحظر عن "${email}"؟ هيقدر يسجل دخول تاني.`)) return;
-  // لازم تضيفه تاني في المستخدمين
-  const result = await window.firebaseUnbanUser(email);
+async function unbanUser(uid) {
+  if (!confirm('رفع الحظر عن هذا المستخدم؟ هيقدر يسجل دخول تاني.')) return;
+  const result = await window.firebaseUnbanUser(uid);
   if (result.success) {
-    showToast('✅ تم رفع الحظر - اضفه تاني من إضافة مستخدم');
+    showToast('✅ تم رفع الحظر - المستخدم يقدر يدخل دلوقتي');
     await loadUsersList();
   } else {
     showToast(result.error, true);
@@ -1919,9 +1913,10 @@ async function setUserPassword(uid) {
 
 async function deleteUserConfirm(uid, email) {
   if (email.toLowerCase() === OWNER_EMAIL_LOCAL) { showToast('لا يمكن حذف المالك', true); return; }
-  if (!confirm(`هل أنت متأكد من حذف "${email}"؟`)) return;
+  if (!confirm(`هل أنت متأكد من حظر "${email}"؟
+لن يتمكن من تسجيل الدخول.`)) return;
   const result = await window.firebaseDeleteUser(uid, email);
-  if (result.success) { showToast('✅ تم الحذف'); await loadUsersList(); }
+  if (result.success) { showToast('🚫 تم حظر المستخدم بنجاح'); await loadUsersList(); }
   else { showToast(result.error, true); }
 }
 
