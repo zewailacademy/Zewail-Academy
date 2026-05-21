@@ -1223,12 +1223,18 @@ async function sha256(text) {
 
 // ===== PASSWORD - Firebase backed =====
 async function getStoredPasswordHash() {
-  // Try Firebase first, fallback to localStorage
+  // Priority: localStorage (changed password) → Firebase → DEFAULT
+  const localHash = localStorage.getItem(PWD_KEY);
+  if (localHash) return localHash;
+
   if (window.firebaseReady) {
-    const fbHash = await window.firebaseGetPassword();
-    if (fbHash) return fbHash;
+    try {
+      const fbHash = await window.firebaseGetPassword();
+      if (fbHash) return fbHash;
+    } catch(e) { /* ignore */ }
   }
-  return localStorage.getItem(PWD_KEY) || DEFAULT_PASSWORD_HASH;
+
+  return DEFAULT_PASSWORD_HASH;
 }
 
 async function setStoredPasswordHash(hash) {
