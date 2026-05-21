@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>زويل أكاديمي - دليل الدبلومات والكورسات</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1b2a;
+  --bg-soft: #1b263b;
+  --card: #ffffff;
+  --ink: #0d1b2a;
+  --ink-soft: #415a77;
+  --accent: #d4af37;
+  --accent-soft: #f4e4a6;
+  --line: #e0e1dd;
+  --green: #2d6a4f;
+  --red: #c1121f;
+  --blue: #1976d2;
+  --shadow: 0 10px 40px rgba(13, 27, 42, 0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 20px 12px;
+  line-height: 1.6;
+}
+
+.container { max-width: 1100px; margin: 0 auto; }
+
+.header {
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-soft) 100%);
+  color: white;
+  padding: 32px 24px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+  opacity: 0.15;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  font-family: 'Amiri', serif;
+  font-size: clamp(28px, 6vw, 42px);
+  font-weight: 700;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.header h1 span { color: var(--accent); }
+
+.header p {
+  opacity: 0.85;
+  font-size: 16px;
+  position: relative;
+}
+
+.admin-status {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px 14px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-status.locked { color: rgba(255,255,255,0.6); }
+.admin-status.unlocked { background: var(--green); border-color: var(--green); color: white; }
+.admin-status:hover { transform: scale(1.03); }
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  position: relative;
+}
+
+.tool-btn {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tool-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.tool-btn.primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.tool-btn.primary:hover { background: white; }
+
+.admin-only { display: none; }
+.admin-only.show { display: flex; }
+
+.selector-card {
+  background: var(--card);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  border: 1px solid var(--line);
+}
+
+.selector-label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--ink);
+  font-size: 17px;
+}
+
+.selector-label::before { content: '◆'; color: var(--accent); margin-left: 8px; }
+
+select, input, textarea {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 500;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: white;
+  color: var(--ink);
+  transition: all 0.3s;
+}
+
+select {
+  padding: 16px 18px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: 18px center;
+  appearance: none;
+}
+
+select:focus, input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+}
+
+textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-serif; }
+
+.empty-state {
+  background: var(--card);
+  padding: 60px 24px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+}
+
+.empty-state .icon { font-size: 64px; margin-bottom: 16px; opacity: 0.3; }
+.empty-state p { color: var(--ink-soft); font-size: 18px; }
+
+.course-display { animation: fadeIn 0.5s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.course-title-card {
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-soft) 100%);
+  color: white;
+  padding: 28px 24px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.course-title-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent);
+}
+
+.course-title-card .title-area { flex: 1; min-width: 200px; }
+.course-title-card h2 { font-family: 'Amiri', serif; font-size: clamp(22px, 5vw, 30px); font-weight: 700; }
+
+.course-title-card .badge {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.course-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.course-actions button {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.course-actions button:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.course-actions button.danger:hover { background: var(--red); color: white; border-color: var(--red); }
+
+.section {
+  background: var(--card);
+  padding: 22px;
+  border-radius: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  border-right: 4px solid var(--accent);
+}
+
+.section h3 {
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed var(--line);
+}
+
+.section h3 .emoji { font-size: 24px; }
+
+.info-grid { display: grid; gap: 12px; }
+
+.info-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  padding: 12px 14px;
+  background: #fafbfc;
+  border-radius: 10px;
+  border-right: 3px solid var(--accent-soft);
+}
+
+.info-item .label { font-size: 13px; color: var(--ink-soft); font-weight: 500; }
+.info-item .value { font-size: 16px; font-weight: 600; color: var(--ink); }
+.info-item .value.price { color: var(--green); font-size: 18px; font-weight: 700; }
+.info-item .value.highlight { color: var(--accent); }
+.info-item .value.date { color: var(--blue); }
+
+.dates-section { border-right-color: var(--blue); }
+.dates-section .info-item { border-right-color: #bbdefb; }
+
+.installment-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  background: linear-gradient(to left, #fff8e1 0%, #fafbfc 100%);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border-right: 3px solid var(--accent);
+}
+
+.installment-row .num {
+  background: var(--accent);
+  color: var(--bg);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.installment-row .when { font-size: 14px; color: var(--ink-soft); }
+.installment-row .amount { font-weight: 700; color: var(--green); font-size: 16px; }
+
+.lecturer-card {
+  background: linear-gradient(135deg, #fff8e1 0%, #fafbfc 100%);
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border-right: 3px solid var(--accent);
+}
+
+.lecturer-card .name { font-weight: 700; font-size: 16px; color: var(--ink); margin-bottom: 4px; }
+.lecturer-card .name::before { content: '👨‍🏫'; margin-left: 6px; }
+.lecturer-card .bio { font-size: 14px; color: var(--ink-soft); line-height: 1.7; }
+
+.lecturer-card .specialty {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.accred-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 14px;
+  background: #f0f8ff;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border-right: 3px solid #1976d2;
+  align-items: start;
+}
+
+.accred-card .name { font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.accred-card .desc { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+.accred-card .fee {
+  background: #1976d2;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.content-list {
+  background: #fafbfc;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border-right: 3px solid var(--green);
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--ink);
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #fafbfc 100%);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border-right: 3px solid var(--blue);
+  text-decoration: none;
+  color: var(--ink);
+  transition: all 0.2s;
+}
+
+.link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(25, 118, 210, 0.15);
+}
+
+.link-card .link-info { display: flex; align-items: center; gap: 12px; }
+.link-card .link-icon { font-size: 28px; }
+.link-card .link-title { font-weight: 700; color: var(--ink); }
+.link-card .link-subtitle { font-size: 13px; color: var(--ink-soft); }
+
+.link-card .open-btn {
+  background: var(--blue);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.footer { text-align: center; padding: 24px; color: var(--ink-soft); font-size: 14px; margin-top: 20px; }
+.footer strong { color: var(--accent); }
+
+/* === MODAL STYLES === */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 27, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px 12px;
+  overflow-y: auto;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 700px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  margin: auto;
+}
+
+.modal.small { max-width: 420px; }
+
+.modal-header {
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-soft) 100%);
+  color: white;
+  padding: 20px 24px;
+  border-radius: 20px 20px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 { font-family: 'Amiri', serif; font-size: 22px; }
+
+.close-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover { background: var(--red); }
+
+.modal-body { padding: 20px 24px; }
+
+.form-section {
+  background: #fafbfc;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border-right: 3px solid var(--accent);
+}
+
+.form-section.dates { border-right-color: var(--blue); background: #f0f8ff; }
+.form-section.links { border-right-color: var(--green); background: #f0f9f4; }
+
+.form-section h4 {
+  font-size: 16px;
+  color: var(--ink);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-row { display: grid; gap: 10px; margin-bottom: 10px; }
+.form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+
+@media (max-width: 600px) {
+  .form-row.cols-2 { grid-template-columns: 1fr; }
+}
+
+.form-group label { display: block; font-size: 13px; color: var(--ink-soft); font-weight: 600; margin-bottom: 6px; }
+.form-group input, .form-group textarea, .form-group select { padding: 10px 12px; font-size: 14px; border: 1.5px solid var(--line); border-radius: 8px; }
+
+.repeater-item {
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 1.5px solid var(--line);
+  position: relative;
+}
+
+.repeater-item .remove-item {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--red);
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-item-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Tajawal', sans-serif;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-radius: 0 0 20px 20px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { background: var(--bg); color: var(--accent); }
+.btn-secondary { background: var(--line); color: var(--ink); }
+.btn-secondary:hover { background: #ccc; }
+.btn-danger { background: var(--red); color: white; }
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--green);
+  color: white;
+  padding: 14px 24px;
+  border-radius: 30px;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  z-index: 2000;
+  animation: slideUp 0.3s ease;
+}
+
+.toast.error { background: var(--red); }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.help-banner {
+  background: linear-gradient(135deg, #fff8e1 0%, #fafbfc 100%);
+  border-right: 4px solid var(--accent);
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.8;
+}
+
+.help-banner strong { color: var(--ink); }
+
+.password-form {
+  text-align: center;
+  padding: 30px 24px;
+}
+
+.password-form .lock-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.password-form input {
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 4px;
+}
+
+.password-form .hint {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 12px;
+}
+
+@media (min-width: 768px) {
+  body { padding: 32px 24px; }
+  .info-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1>زويل <span>أكاديمي</span></h1>
+        <p>دليل الدبلومات والكورسات التدريبية الشامل</p>
+      </div>
+      <div class="admin-status locked" id="adminStatus" onclick="toggleAdmin()">
+        <span id="adminStatusIcon">🔒</span>
+        <span id="adminStatusText">دخول الأدمن</span>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="tool-btn primary admin-only" onclick="openAddModal()">➕ إضافة دبلومة</button>
+      <button class="tool-btn admin-only" onclick="exportData()">💾 تصدير نسخة احتياطية</button>
+      <button class="tool-btn admin-only" onclick="document.getElementById('importFile').click()">📂 استيراد نسخة</button>
+      <button class="tool-btn admin-only" onclick="resetData()">🔄 استعادة الافتراضي</button>
+      <button class="tool-btn admin-only" onclick="changePassword()">🔑 تغيير الباسورد</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+
+  <div class="selector-card">
+    <label class="selector-label" for="courseSelect">اختر الدبلومة لعرض كل التفاصيل</label>
+    <select id="courseSelect" onchange="displayCourse(this.value)">
+      <option value="">— اختر دبلومة —</option>
+    </select>
+  </div>
+
+  <div id="output">
+    <div class="empty-state">
+      <div class="icon">📚</div>
+      <p>اختار دبلومة من القائمة فوق علشان تشوف كل التفاصيل</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>زويل أكاديمي</strong> · جميع الحقوق محفوظة
+  </div>
+
+</div>
+
+<!-- ============ PASSWORD MODAL ============ -->
+<div class="modal-overlay" id="passwordModal">
+  <div class="modal small">
+    <div class="modal-header">
+      <h2 id="pwdModalTitle">دخول الأدمن</h2>
+      <button class="close-btn" onclick="closePasswordModal()">×</button>
+    </div>
+    <div class="modal-body password-form">
+      <div class="lock-icon">🔐</div>
+      <p style="margin-bottom:16px;color:var(--ink-soft)" id="pwdInstructions">أدخل باسورد الأدمن للوصول لإمكانيات التعديل</p>
+      <div id="pwdInputs">
+        <input type="password" id="pwdInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitPassword()">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="submitPassword()">تأكيد</button>
+      <button class="btn btn-secondary" onclick="closePasswordModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ EDIT MODAL ============ -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">تعديل دبلومة</h2>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="help-banner">
+        <strong>💡 ملاحظة:</strong> أي تعديل بتعمله بيتحفظ تلقائياً. اعمل <strong>تصدير نسخة احتياطية</strong> دايماً.
+      </div>
+
+      <div class="form-section">
+        <h4>📋 المعلومات الأساسية</h4>
+        <div class="form-row">
+          <div class="form-group"><label>اسم الدبلومة</label><input type="text" id="f_name"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>قيمة الحجز</label><input type="text" id="f_booking"></div>
+          <div class="form-group"><label>المدة</label><input type="text" id="f_duration"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>السعر للمصريين</label><input type="text" id="f_priceEgypt"></div>
+          <div class="form-group"><label>السعر لغير المصريين</label><input type="text" id="f_priceForeign"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>السعر بالدولار</label><input type="text" id="f_priceUSD"></div>
+          <div class="form-group"><label>عدد المحاضرات</label><input type="text" id="f_lectures"></div>
+        </div>
+      </div>
+
+      <div class="form-section dates">
+        <h4>📅 المواعيد المهمة</h4>
+        <div class="form-row">
+          <div class="form-group"><label>آخر تاريخ للحجز المبكر</label><input type="text" id="f_earlyBookingDeadline" placeholder="مثال: 15 مايو 2026"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>تاريخ المحاضرة التعريفية</label><input type="text" id="f_introLectureDate" placeholder="مثال: 20 مايو 2026"></div>
+          <div class="form-group"><label>تاريخ المحاضرة الرئيسية</label><input type="text" id="f_mainLectureDate" placeholder="مثال: 25 مايو 2026"></div>
+        </div>
+      </div>
+
+      <div class="form-section links">
+        <h4>🔗 الملفات والروابط</h4>
+        <div class="form-row">
+          <div class="form-group"><label>ملف الدبلومة (لينك)</label><input type="url" id="f_courseFileLink" placeholder="https://drive.google.com/..."></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>جدول الدبلومة (لينك)</label><input type="url" id="f_courseScheduleLink" placeholder="https://drive.google.com/..."></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>📅 الأقساط <button type="button" class="add-item-btn" onclick="addInstallment()">+ قسط</button></h4>
+        <div id="installmentsList"></div>
+      </div>
+
+      <div class="form-section">
+        <h4>📖 النظام النظري</h4>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>مكان الدراسة</label><input type="text" id="f_th_mode"></div>
+          <div class="form-group"><label>اليوم</label><input type="text" id="f_th_day"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>التوقيت</label><input type="text" id="f_th_time"></div>
+          <div class="form-group"><label>مدة المحاضرة</label><input type="text" id="f_th_duration"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>هيكل المحاضرات</label><textarea id="f_th_structure"></textarea></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>🔬 النظام العملي</h4>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>مكان التدريب</label><input type="text" id="f_pr_location"></div>
+          <div class="form-group"><label>الميعاد</label><input type="text" id="f_pr_time"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>عدد المحاضرات</label><input type="text" id="f_pr_lectures"></div>
+          <div class="form-group"><label>المدة</label><input type="text" id="f_pr_duration"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>المحتوى العملي</label><textarea id="f_pr_content"></textarea></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>👨‍🏫 المحاضرين <button type="button" class="add-item-btn" onclick="addLecturer()">+ محاضر</button></h4>
+        <div id="lecturersList"></div>
+      </div>
+
+      <div class="form-section">
+        <h4>🎖️ اعتماد زويل أكاديمي</h4>
+        <div class="form-row">
+          <div class="form-group"><label>تفاصيل الاعتماد</label><textarea id="f_zewailAccred"></textarea></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>🌍 الاعتمادات الخارجية <button type="button" class="add-item-btn" onclick="addAccred()">+ اعتماد</button></h4>
+        <div id="accredsList"></div>
+      </div>
+
+      <div class="form-section">
+        <h4>🎯 الفئة المستهدفة والشروط</h4>
+        <div class="form-row">
+          <div class="form-group"><label>الفئة المستهدفة</label><textarea id="f_targetAudience"></textarea></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>المسمى الأخصائي</label><textarea id="f_synd_specialist"></textarea></div>
+          <div class="form-group"><label>المسمى الفني</label><textarea id="f_synd_technician"></textarea></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>مواصفات المركز المرخص</label><textarea id="f_centerLicense"></textarea></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveCourse()">💾 حفظ</button>
+      <button class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ AUTH ============
+// SHA-256 hash of admin password (kept private)
+const DEFAULT_PASSWORD_HASH = 'ebf3ca9c8cae07dffa882742ae8b6364a9744c6da2a5ae9ffabeffa525d05b82';
+const PWD_KEY = 'zewail_pwd_hash_v1';
+const ADMIN_SESSION_KEY = 'zewail_admin_session_v1';
+let isAdmin = false;
+let pwdMode = 'login'; // 'login' | 'change-old' | 'change-new'
+let newPasswordTemp = '';
+
+async function sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function getStoredPasswordHash() {
+  return localStorage.getItem(PWD_KEY) || DEFAULT_PASSWORD_HASH;
+}
+
+function setStoredPasswordHash(hash) {
+  localStorage.setItem(PWD_KEY, hash);
+}
+
+function checkAdminSession() {
+  // Session is valid only within current browser session (sessionStorage)
+  const session = sessionStorage.getItem(ADMIN_SESSION_KEY);
+  isAdmin = session === 'active';
+  updateAdminUI();
+}
+
+function updateAdminUI() {
+  const status = document.getElementById('adminStatus');
+  const icon = document.getElementById('adminStatusIcon');
+  const text = document.getElementById('adminStatusText');
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.classList.toggle('show', isAdmin);
+  });
+  if (isAdmin) {
+    status.classList.remove('locked');
+    status.classList.add('unlocked');
+    icon.textContent = '🔓';
+    text.textContent = 'تسجيل خروج الأدمن';
+  } else {
+    status.classList.add('locked');
+    status.classList.remove('unlocked');
+    icon.textContent = '🔒';
+    text.textContent = 'دخول الأدمن';
+  }
+  // Re-render current course to show/hide edit buttons
+  const sel = document.getElementById('courseSelect');
+  if (sel.value) displayCourse(sel.value);
+}
+
+function toggleAdmin() {
+  if (isAdmin) {
+    if (confirm('هل تريد تسجيل خروج الأدمن؟')) {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      isAdmin = false;
+      updateAdminUI();
+      showToast('تم تسجيل الخروج ✓');
+    }
+  } else {
+    pwdMode = 'login';
+    document.getElementById('pwdModalTitle').textContent = 'دخول الأدمن';
+    document.getElementById('pwdInstructions').textContent = 'أدخل باسورد الأدمن للوصول لإمكانيات التعديل';
+    document.getElementById('pwdInput').value = '';
+    document.getElementById('passwordModal').classList.add('active');
+    setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+  }
+}
+
+function closePasswordModal() {
+  document.getElementById('passwordModal').classList.remove('active');
+  pwdMode = 'login';
+}
+
+async function submitPassword() {
+  const input = document.getElementById('pwdInput').value;
+  if (!input) { showToast('أدخل الباسورد', true); return; }
+  const inputHash = await sha256(input);
+
+  if (pwdMode === 'login') {
+    if (inputHash === getStoredPasswordHash()) {
+      sessionStorage.setItem(ADMIN_SESSION_KEY, 'active');
+      isAdmin = true;
+      updateAdminUI();
+      closePasswordModal();
+      showToast('مرحباً بك يا أدمن ✓');
+    } else {
+      showToast('باسورد خطأ', true);
+      document.getElementById('pwdInput').value = '';
+    }
+  } else if (pwdMode === 'change-old') {
+    if (inputHash === getStoredPasswordHash()) {
+      pwdMode = 'change-new';
+      document.getElementById('pwdModalTitle').textContent = 'الباسورد الجديد';
+      document.getElementById('pwdInstructions').textContent = 'أدخل الباسورد الجديد (6 أحرف على الأقل)';
+      document.getElementById('pwdInput').value = '';
+      document.getElementById('pwdInput').focus();
+    } else {
+      showToast('الباسورد القديم خطأ', true);
+      document.getElementById('pwdInput').value = '';
+    }
+  } else if (pwdMode === 'change-new') {
+    if (input.length < 6) { showToast('الباسورد لازم يبقى 6 أحرف على الأقل', true); return; }
+    if (!newPasswordTemp) {
+      newPasswordTemp = input;
+      document.getElementById('pwdModalTitle').textContent = 'تأكيد الباسورد';
+      document.getElementById('pwdInstructions').textContent = 'أعد كتابة الباسورد الجديد للتأكيد';
+      document.getElementById('pwdInput').value = '';
+      document.getElementById('pwdInput').focus();
+    } else {
+      if (input === newPasswordTemp) {
+        const newHash = await sha256(input);
+        setStoredPasswordHash(newHash);
+        newPasswordTemp = '';
+        closePasswordModal();
+        showToast('تم تغيير الباسورد بنجاح ✓');
+      } else {
+        showToast('الباسورد غير متطابق', true);
+        newPasswordTemp = '';
+        pwdMode = 'change-new';
+        document.getElementById('pwdModalTitle').textContent = 'الباسورد الجديد';
+        document.getElementById('pwdInstructions').textContent = 'أدخل الباسورد الجديد';
+        document.getElementById('pwdInput').value = '';
+      }
+    }
+  }
+}
+
+function changePassword() {
+  if (!isAdmin) { showToast('لازم تكون مسجل دخول كأدمن', true); return; }
+  pwdMode = 'change-old';
+  newPasswordTemp = '';
+  document.getElementById('pwdModalTitle').textContent = 'تغيير الباسورد';
+  document.getElementById('pwdInstructions').textContent = 'أدخل الباسورد الحالي أولاً';
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('passwordModal').classList.add('active');
+  setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+}
+
+function requireAdmin() {
+  if (!isAdmin) {
+    showToast('لازم تسجل دخول كأدمن أولاً', true);
+    toggleAdmin();
+    return false;
+  }
+  return true;
+}
+
+// ============ DEFAULT DATA ============
+const defaultCourses = [
+  {
+    id: 1, name: "دبلومة التغذية العلاجية", booking: "500 ج", priceEgypt: "5000 ج", priceForeign: "6000 ج", priceUSD: "170 دولار", duration: "3 شهور", lectures: "25",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "بعد المحاضرة الأولى من التخصص", amount: "2500 ج" },
+      { num: 2, when: "بعد المحاضرة العاشرة", amount: "1900 ج" },
+      { num: 3, when: "بعد المحاضرة الثامنة عشر", amount: "1100 ج" }
+    ],
+    theory: { mode: "أونلاين على زوم", day: "الأحد والأربعاء", time: "9 مساءً", duration: "حوالي ساعتين", structure: "3 محاضرات شرح محتوى + محاضرة عن كيفية وضع الأنظمة الغذائية + محاضرة امتحان" },
+    practical: { location: "طنطا · الجيزة · الإسكندرية", time: "بيتحدد مع إدارة التدريب في نهاية الدبلومة", lectures: "6", duration: "أسبوع", content: "تدريب متخصص في تغذية الأطفال · تغذية الرياضيين · تطبيقات عملية في علاج السمنة والنحافة · شرح عملي لتجهيز العيادات ومراكز التغذية · التعرف على منتجات السمنة والنحافة · خطوات وإجراءات ترخيص العيادات · سيشن عملي داخل الجيم لتغذية الرياضيين 🏋️" },
+    lecturers: [
+      { name: "د. محمد سعيد", bio: "مدير مركز be gold · مسؤول شعبة التغذية بأكاديمية زويل", specialty: "سمنة ونحافة" },
+      { name: "د. أحمد جاد", bio: "محاضر معتمد من نقابة المهن · البورد الأمريكي في التغذية العلاجية", specialty: "تغذية الرياضيين" },
+      { name: "د. وفاء ذكي", bio: "أستاذة بكلية طب جامعة المنصورة · استشاري تغذية علاجية وسمنة ونحافة", specialty: "حوامل ومرضع" },
+      { name: "د. إيمان عصر", bio: "رئيس قسم التغذية العلاجية في مستشفى جمال عبد الناصر · دبلومة الصحة العامة", specialty: "تغذية علاجية" },
+      { name: "د. عمرو عبد الرحمن", bio: "خبير في الذكاء الاصطناعي وتطبيقاته في التغذية", specialty: "الذكاء الاصطناعي" },
+      { name: "د. رضوى وحيد", bio: "عضو هيئة تدريس بجامعة عين شمس · دكتوراه في الكيمياء الحيوية والتغذية", specialty: "تغذية أطفال" }
+    ],
+    zewailAccred: "شهادة الأكاديمية بمسمى الدبلومة (130 ساعة تدريبية) + كارنيه من الأكاديمية ببرنامج الدبلومة",
+    externalAccred: [
+      { name: "شهادة جامعة طنطا", fee: "2500 ج", desc: "بمسمى دورة تدريبية بختم النسر · قابلة للتوثيق خارجية" },
+      { name: "شهادة خبرة من وزارة العدل", fee: "1500 ج", desc: "لمدة عام أو أكثر · معتمدة بختم نسر · قابلة للتوثيق خارجية" },
+      { name: "اللجنة النقابية (كارنيه عضوية)", fee: "500 ج", desc: "لجنة نقابية مقيدة بوزارة العمل · شهادة قيد موثقة بالخارجية المصرية" },
+      { name: "نقابة الصيادلة", fee: "1700 ج", desc: "اعتماد محلي" },
+      { name: "الجامعة الأمريكية للعلوم", fee: "2000 + 500 ج", desc: "جامعة علمية أكاديمية مقرها ولاية Delaware" },
+      { name: "المعهد الأمريكي AIHC", fee: "150 دولار (تخصص واحد 75 دولار)", desc: "منظمة مستقلة في الولايات المتحدة · تابعة للمجموعة الأمريكية AGMEP" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "جامعة مقرها الرئيس في لندن · بريطانيا" }
+    ],
+    targetAudience: "المؤهلات العليا · يفضل الكليات الطبية",
+    syndicate: { specialist: "أخصائي - خريج كلية علمية طبية", technician: "فني - طالب بكلية علمية طبية" },
+    centerLicense: "مركز صحة ولياقة بدنية متاح فيه كتابة أنظمة غذائية ومتابعة الحالات (دون كتابة روشتات أو وجود أجهزة)"
+  },
+  {
+    id: 2, name: "كورس التحاليل الطبية", booking: "500 ج", priceEgypt: "2000 ج", priceForeign: "2250 ج", priceUSD: "100 دولار", duration: "شهر", lectures: "12",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "بعد المحاضرة الأولى", amount: "950 ج" },
+      { num: 2, when: "بعد المحاضرة الرابعة", amount: "800 ج" }
+    ],
+    theory: { mode: "أونلاين على زوم أو في المقر", day: "حسب الاتفاق", time: "حسب الاتفاق", duration: "ساعتين تقريباً", structure: "6 محاضرات نظرية" },
+    practical: { location: "الجيزة · الإسكندرية · طنطا · المنصورة", time: "يحدد حسب الاتفاق", lectures: "6", duration: "حوالي ساعتين", content: "سحب العينات · استقبال المريض · قراءة الريكويستات · التدريب على أقسام: الهيماتولوجي · الكيمياء الحيوية · الباراسيتولوجي · علم الأحياء الدقيقة" },
+    lecturers: [
+      { name: "د. إسلام حماد", bio: "محاضر النظري أونلاين", specialty: "تحاليل طبية" },
+      { name: "د. محمد سعيد", bio: "محاضر النظري أونلاين", specialty: "تحاليل طبية" },
+      { name: "د. شيماء محمد", bio: "محاضرة فرع الجيزة", specialty: "الجيزة" },
+      { name: "د. هدير إبراهيم", bio: "محاضرة فرع طنطا", specialty: "طنطا" },
+      { name: "د. مريم محمد", bio: "محاضرة فرع الإسكندرية", specialty: "الإسكندرية" },
+      { name: "د. هيثم جمال", bio: "محاضر فرع المنصورة", specialty: "المنصورة" }
+    ],
+    zewailAccred: "شهادة معتمدة من زويل أكاديمي + كارنيه ببرنامج الكورس",
+    externalAccred: [
+      { name: "شهادة جامعة طنطا", fee: "2500 ج", desc: "بمسمى دورة تدريبية بختم النسر · قابلة للتوثيق خارجية" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "جامعة مقرها الرئيس في لندن · بريطانيا" },
+      { name: "الجامعة الأمريكية للعلوم (شهادة + كارنيه)", fee: "2000 + 500 ج", desc: "جامعة علمية أكاديمية مقرها ولاية Delaware" },
+      { name: "اللجنة النقابية (شهادة + كارنيه)", fee: "1700 + 500 ج", desc: "لجنة نقابية مقيدة بوزارة العمل · شهادة قيد موثقة بالخارجية المصرية" },
+      { name: "شهادة خبرة من وزارة العدل", fee: "1500 ج", desc: "لمدة عام أو أكثر · معتمدة بختم نسر · قابلة للتوثيق خارجية" }
+    ],
+    targetAudience: "طب · صيدلة · علوم · بيطري · زراعة · تربية قسم كيمياء أو بايولوجي · معهد فني صحي",
+    syndicate: { specialist: "مساعد تحاليل طبية", technician: "—" },
+    centerLicense: "—"
+  },
+  {
+    id: 3, name: "دبلومة الجودة الشاملة", booking: "500 ج", priceEgypt: "4500 ج", priceForeign: "5000 ج", priceUSD: "170 دولار", duration: "3 شهور", lectures: "29",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "بعد المحاضرة الأولى", amount: "2200 ج" },
+      { num: 2, when: "بعد العاشرة", amount: "1400 ج" },
+      { num: 3, when: "بعد المحاضرة 18", amount: "900 ج" }
+    ],
+    theory: { mode: "أونلاين على زوم", day: "الاثنين والخميس · تخصص مكافحة العدوى: السبت والخميس", time: "9 مساءً", duration: "من ساعتين لـ 3 ساعات", structure: "27 محاضرة" },
+    practical: { location: "الجيزة", time: "بيتحدد مع إدارة التدريب في نهاية الدبلومة", lectures: "1", duration: "—", content: "سلامة وصحة مهنية" },
+    lecturers: [
+      { name: "د. إيهاب زهران", bio: "استشاري السلامة والصحة المهنية · مدير السلامة والصحة المهنية في مستشفيات جامعة طنطا · مدرب دولي معتمد", specialty: "جودة الرعاية الصحية" },
+      { name: "د. حاتم بيطار", bio: "مديرة إدارة الجودة في مستشفى التأمين الصحي · أخصائي الأزمات والكوارث ومكافحة العدوى · استشاري الرعاية الصحية", specialty: "إدارة المستشفيات" },
+      { name: "م. محمد محمود", bio: "مدير السلامة والصحة المهنية في 57357 · مقيم وطني في الهيئة العامة للاعتماد · خبير الاعتماد الصحي الدولي والصحة المهنية", specialty: "سلامة وصحة مهنية" },
+      { name: "د. دعاء صبري", bio: "استشاري الجودة الطبية والاعتماد · محاضر بجامعة القاهرة · محكم وخبير التحكيم الطبي الدولي · خبير التطوير المؤسسي للمستشفيات", specialty: "مكافحة العدوى" }
+    ],
+    zewailAccred: "شهادة معتمدة من زويل أكاديمي + كارنيه ببرنامج الدبلومة + شهادة بختم النسر من الهيئة المصرية للمواصفات والجودة",
+    externalAccred: [
+      { name: "شهادة جامعة طنطا", fee: "2500 ج", desc: "بمسمى دورة تدريبية بختم النسر · قابلة للتوثيق خارجية" },
+      { name: "الجامعة الأمريكية للعلوم (شهادة + كارنيه)", fee: "2000 + 500 ج", desc: "جامعة علمية أكاديمية مقرها ولاية Delaware" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "جامعة مقرها الرئيس في لندن · بريطانيا" },
+      { name: "شهادة من معهد AIHC", fee: "150 دولار (أو 85 دولار)", desc: "منظمة مستقلة في الولايات المتحدة · تابعة للمجموعة الأمريكية AGMEP" },
+      { name: "شهادة AACMA", fee: "2200 ج", desc: "الجمعية المصرية للتعليم الطبي المستمر · اعتماد دولي معترف به خارج البلاد" }
+    ],
+    targetAudience: "الكليات الطبية", syndicate: { specialist: "لا يوجد", technician: "—" }, centerLicense: "لا يوجد"
+  },
+  {
+    id: 4, name: "دبلومة التجميل اللاجراحي", booking: "1000 ج", priceEgypt: "10000 ج", priceForeign: "12000 ج", priceUSD: "250 دولار (دبلومة) + 400 دولار (ليزر)", duration: "شهرين", lectures: "9",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "بعد المحاضرة الأولى", amount: "5000 ج" },
+      { num: 2, when: "بعد المحاضرة 3", amount: "4000 ج" },
+      { num: 3, when: "بعد المحاضرة 5", amount: "2000 ج" }
+    ],
+    theory: { mode: "حضوري في الجيزة والإسكندرية (بشرط اكتمال العدد)", day: "الاثنين", time: "12 ظهراً", duration: "من 3 إلى 5 ساعات", structure: "4 محاضرات" },
+    practical: { location: "الجيزة · الإسكندرية", time: "الاثنين الساعة 12", lectures: "5", duration: "من 3 إلى 5 ساعات", content: "العناية بالبشرة · فيلر · بوتوكس · الخيوط · (كورس الليزر اختياري بتكلفة إضافية)" },
+    lecturers: [
+      { name: "د. محمد ولاء", bio: "بكالوريوس طب وجراحة · استشاري التجميل اللاجراحي والليزر · المدير الطبي لعيادات سولي كلينك · مدرب دولي معتمد", specialty: "الجيزة" },
+      { name: "د. أنجي الأمير", bio: "استشاري التجميل اللاجراحي · حاصلة على الزمالة الأمريكية بالتجميل اللاجراحي · البورد الأمريكي بالتجميل اللاجراحي · البورد الأمريكي للجلدية والتجميل", specialty: "الإسكندرية" }
+    ],
+    zewailAccred: "شهادة من الأكاديمية بمسمى الدبلومة (120 ساعة تدريبية) + كارنيه ببرنامج الدبلومة",
+    externalAccred: [
+      { name: "شهادة خبرة من وزارة العدل", fee: "1500 ج", desc: "لمدة عام أو أكثر · معتمدة بختم نسر · قابلة للتوثيق خارجية" },
+      { name: "الجامعة الأمريكية للعلوم (شهادة + كارنيه)", fee: "2000 + 500 ج", desc: "جامعة علمية أكاديمية مقرها ولاية Delaware" },
+      { name: "اللجنة النقابية (شهادة + كارنيه)", fee: "1700 + 500 ج", desc: "لجنة نقابية · شهادة قيد موثقة بالخارجية المصرية" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "جامعة مقرها الرئيس في لندن · بريطانيا" }
+    ],
+    targetAudience: "بشري · بيطري · أسنان · صيدلة · علاج طبيعي",
+    syndicate: { specialist: "أخصائي تجميل لا جراحي - خريج طب بشري أو أسنان فقط", technician: "باقي المؤهلات: أخصائي عناية بالبشرة والشعر" },
+    centerLicense: "مركز تجميل لاجراحي بدون حقن (يمارس فيه عناية بالبشرة)"
+  },
+  {
+    id: 5, name: "كورس الليزر", booking: "500 ج", priceEgypt: "4000 ج (كاش فقط)", priceForeign: "—", priceUSD: "—", duration: "3 أسابيع", lectures: "3",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [{ num: 1, when: "دفع المبلغ كامل مع أول محاضرة", amount: "3500 ج" }],
+    theory: { mode: "حضوري - الجيزة", day: "الأربعاء", time: "12 ظهراً", duration: "2 إلى 3 ساعات", structure: "2 محاضرة" },
+    practical: { location: "مركز ليزر المهندسين أو مدينة نصر", time: "—", lectures: "1", duration: "—", content: "جهاز الفراكشينال ليزر · جهاز الكيوسوتش ليزر · جهاز إزالة الشعر · مقدمة في علم الليزر · أهم تطبيقاته · أجهزة الليزر والفروق بينهم" },
+    lecturers: [{ name: "د. محمد ولاء", bio: "بكالوريوس طب وجراحة · استشاري التجميل اللاجراحي والليزر · المدير الطبي لعيادات سولي كلينك", specialty: "ليزر" }],
+    zewailAccred: "شهادة من أكاديمية زويل بمسمى الكورس (80 ساعة تدريبية) + كارنيه ببرنامج الكورس",
+    externalAccred: [
+      { name: "شهادة خبرة من وزارة العدل", fee: "1500 ج", desc: "لمدة عام أو أكثر · معتمدة بختم نسر · قابلة للتوثيق خارجية" },
+      { name: "الجامعة الأمريكية للعلوم", fee: "2000 + 500 ج", desc: "جامعة علمية أكاديمية مقرها ولاية Delaware" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "جامعة مقرها الرئيس في لندن · بريطانيا" }
+    ],
+    targetAudience: "بشري · بيطري · أسنان · صيدلة · علاج طبيعي", syndicate: { specialist: "—", technician: "—" }, centerLicense: "—"
+  },
+  {
+    id: 6, name: "ماجستير التجميل اللاجراحي", booking: "—", priceEgypt: "350 دولار", priceForeign: "350 دولار", priceUSD: "350 دولار", duration: "8 إلى 10 شهور", lectures: "40",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [{ num: 1, when: "لا يوجد تقسيط - الماستر مسجل · الإضافة لقناة التليجرام بعد سداد الرسوم كاملة", amount: "كامل" }],
+    theory: { mode: "محاضرات مسجلة على التليجرام + محاضرة لايف بعد كل تخصص", day: "—", time: "—", duration: "ساعتين", structure: "35 محاضرة" },
+    practical: { location: "الجيزة (إسكندرية مع اكتمال العدد)", time: "يتم التنسيق على جروب الفاينال", lectures: "4", duration: "3 إلى 5 ساعات", content: "العناية بالبشرة · الفيلر والبوتوكس · الخيوط والليزر · العناية بالشعر" },
+    lecturers: [
+      { name: "د. محمد ولاء", bio: "بكالوريوس طب وجراحة · استشاري التجميل اللاجراحي والليزر", specialty: "بشرة وحقن وليزر" },
+      { name: "د. شيماء عبده", bio: "دكتوراه في التجميل · ترايكولوجيست معتمد من البورد الأمريكي", specialty: "العناية بالشعر" }
+    ],
+    zewailAccred: "شهادة من الجامعة ببرنامج الماستر باللغة الأجنبية + كارنيه + بيان درجات",
+    externalAccred: [{ name: "إعتماد الأبوستيل الدولي", fee: "500 دولار", desc: "شهادة دولية معترف بها في 127 دولة موقعة على اتفاقية لاهاي" }],
+    targetAudience: "الكليات العلمية الطبية فقط", syndicate: { specialist: "—", technician: "—" }, centerLicense: "مركز تجميل لاجراحي غير مسموح فيه بالحقن"
+  },
+  {
+    id: 7, name: "ماستر التركيبات", booking: "—", priceEgypt: "300 دولار", priceForeign: "300 دولار", priceUSD: "300 دولار", duration: "من 8 لـ 10 شهور", lectures: "40",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [{ num: 1, when: "لا يوجد تقسيط - الماستر مسجل", amount: "كامل" }],
+    theory: { mode: "محاضرات مسجلة على التليجرام + محاضرة لايف بعد كل تخصص", day: "—", time: "—", duration: "متوسط 3 ساعات", structure: "35 محاضرة" },
+    practical: { location: "الجيزة (إسكندرية مع اكتمال العدد)", time: "يتم التنسيق على جروب الفاينال", lectures: "3", duration: "4 إلى 5 ساعات", content: "منتجات العناية بالبشرة والشعر · الكريمات · شامبوهات · غسولات · سيرم · تونر" },
+    lecturers: [{ name: "د. شيماء عبده", bio: "دكتوراه في التجميل · باحثة في علوم طب الشعر · ترايكولوجيست معتمد من البورد الأمريكي", specialty: "تركيبات تجميلية" }],
+    zewailAccred: "شهادة من الجامعة ببرنامج الماستر باللغة الأجنبية + كارنيه + بيان درجات",
+    externalAccred: [{ name: "إعتماد الأبوستيل الدولي", fee: "500 دولار", desc: "شهادة دولية معترف بها في 127 دولة" }],
+    targetAudience: "متاح لجميع المؤهلات العليا", syndicate: { specialist: "—", technician: "—" }, centerLicense: "—"
+  },
+  {
+    id: 8, name: "ماستر التغذية", booking: "—", priceEgypt: "300 دولار", priceForeign: "300 دولار", priceUSD: "300 دولار", duration: "من 8 لـ 10 شهور", lectures: "40",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [{ num: 1, when: "لا يوجد تقسيط - الماستر مسجل", amount: "كامل" }],
+    theory: { mode: "محاضرات مسجلة على التليجرام + محاضرة لايف بعد كل تخصص", day: "—", time: "—", duration: "متوسط 3 ساعات", structure: "35 محاضرة" },
+    practical: { location: "الجيزة (إسكندرية مع اكتمال العدد)", time: "يتم التنسيق على جروب الفاينال", lectures: "2", duration: "4 إلى 5 ساعات", content: "تغذية الأطفال · التغذية العلاجية · السمنة والنحافة · الحوامل والمرضع · الذكاء الاصطناعي · محاضرات بحث علمي" },
+    lecturers: [{ name: "د. محمد سعيد", bio: "مدير مركز be gold · مسؤول شعبة التغذية بأكاديمية زويل", specialty: "تغذية" }],
+    zewailAccred: "شهادة من الجامعة ببرنامج الماستر باللغة الأجنبية + كارنيه + بيان درجات",
+    externalAccred: [{ name: "إعتماد الأبوستيل الدولي", fee: "500 دولار", desc: "شهادة دولية معترف بها في 127 دولة" }],
+    targetAudience: "متاح للمؤهلات العليا الطبية", syndicate: { specialist: "أخصائي تغذية - خريج كلية علمية طبية", technician: "—" }, centerLicense: "مركز لياقة وصحة بدنية"
+  },
+  {
+    id: 9, name: "دبلومة العناية بالشعر", booking: "500 ج", priceEgypt: "4000 ج", priceForeign: "4500 ج", priceUSD: "170 دولار", duration: "شهر ونصف", lectures: "10",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "بعد المحاضرة الأولى", amount: "2500 ج" },
+      { num: 2, when: "بعد المحاضرة الثالثة", amount: "1500 ج" }
+    ],
+    theory: { mode: "أونلاين لايف على تطبيق زوم", day: "الاثنين", time: "9 مساءً", duration: "من 2 إلى 3 ساعات", structure: "8 محاضرات" },
+    practical: { location: "الجيزة (الإسكندرية مع اكتمال العدد)", time: "يتم التنسيق على جروب الفاينال", lectures: "2", duration: "من 3 إلى 5 ساعات", content: "علم الترايكولوجي · أنواع الشعر والروتين · مشاكل وأمراض الشعر وتشخيصها · فحص الشعر بالديرماسكوب · علاج مشاكل الشعر بالبارد وترميمه · فرد الشعر بكل أنواعه · الكاب ليزر" },
+    lecturers: [
+      { name: "د. رهف", bio: "أخصائي العناية بالبشرة والشعر · مدرب معتمد من نقابة المهن التجميلية", specialty: "عناية بالشعر" },
+      { name: "د. شيماء عبده", bio: "دكتوراه في التجميل · ترايكولوجيست معتمد من البورد الأمريكي", specialty: "عملي الشعر" },
+      { name: "د. أحمد السعدني", bio: "صيدلي · أخصائي العناية بالبشرة والشعر · مدرب لدى شركة النهدي الطبية بالسعودية", specialty: "الإسكندرية" }
+    ],
+    zewailAccred: "شهادة من الأكاديمية بمسمى الدبلومة + كارنيه ببرنامج الدبلومة",
+    externalAccred: [
+      { name: "شهادة خبرة من وزارة العدل", fee: "1500 ج", desc: "لمدة عام أو أكثر · معتمدة بختم نسر" },
+      { name: "اللجنة النقابية (شهادة + كارنيه)", fee: "1700 + 500 ج", desc: "لجنة نقابية مقيدة بوزارة العمل" },
+      { name: "الجامعة الأمريكية للعلوم", fee: "2000 + 500 ج", desc: "مقرها ولاية Delaware" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "مقرها الرئيس في لندن" }
+    ],
+    targetAudience: "جميع المؤهلات",
+    syndicate: { specialist: "أخصائي عناية بشرة وشعر - خريج مؤهلات عليا", technician: "فني عناية - طالب أو مؤهل متوسط" },
+    centerLicense: "مركز تجميل لاجراحي غير مسموح فيه بالحقن"
+  },
+  {
+    id: 10, name: "دبلومة العناية بالبشرة", booking: "500 ج", priceEgypt: "4000 ج", priceForeign: "4500 ج", priceUSD: "170 دولار", duration: "شهر ونصف", lectures: "8",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "بعد المحاضرة الأولى", amount: "2500 ج" },
+      { num: 2, when: "بعد المحاضرة الثانية", amount: "1500 ج" }
+    ],
+    theory: { mode: "زوم · ممكن أول 5 محاضرات نظري أونلاين والباقي عملي بالمقر", day: "السبت والثلاثاء", time: "9 مساءً", duration: "من 3 إلى 5 ساعات", structure: "5 محاضرات" },
+    practical: { location: "الجيزة (الإسكندرية وطنطا مع اكتمال العدد)", time: "الأحد - الساعة 12", lectures: "3", duration: "من 3 إلى 5 ساعات", content: "كل أنواع الأجهزة في البشرة · التقشير البارد والكيميائي · علاج مشاكل البشرة · الديرما بن والديرمارولر · الهالات · رفع الجفون والتجاعيد · الميزوثيرابي" },
+    lecturers: [
+      { name: "د. رهف", bio: "أخصائي العناية بالبشرة والشعر · مدرب معتمد من نقابة المهن التجميلية", specialty: "عناية بالبشرة" },
+      { name: "د. أنجي الأمير", bio: "استشاري التجميل اللاجراحي · البورد الأمريكي للجلدية والتجميل", specialty: "عملي البشرة" },
+      { name: "د. شيماء عبده", bio: "دكتوراه في التجميل · ترايكولوجيست معتمد من البورد الأمريكي", specialty: "بشرة" },
+      { name: "د. أحمد السعدني", bio: "صيدلي · أخصائي العناية بالبشرة والشعر · مدرب لدى شركة النهدي الطبية", specialty: "الإسكندرية" }
+    ],
+    zewailAccred: "شهادة من الأكاديمية بمسمى الدبلومة (120 ساعة تدريبية) + كارنيه ببرنامج الدبلومة",
+    externalAccred: [
+      { name: "شهادة خبرة من وزارة العدل", fee: "1500 ج", desc: "لمدة عام أو أكثر · معتمدة بختم نسر" },
+      { name: "اللجنة النقابية (شهادة + كارنيه)", fee: "1700 + 500 ج", desc: "لجنة نقابية مقيدة بوزارة العمل" },
+      { name: "الجامعة الأمريكية للعلوم", fee: "2000 + 500 ج", desc: "مقرها ولاية Delaware" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "مقرها الرئيس في لندن" }
+    ],
+    targetAudience: "جميع المؤهلات",
+    syndicate: { specialist: "أخصائي عناية بشرة وشعر - مؤهلات عليا", technician: "فني - مؤهلات متوسطة" },
+    centerLicense: "مركز تجميل لاجراحي غير مسموح فيه بالحقن"
+  },
+  {
+    id: 11, name: "دبلومة التركيبات التجميلية", booking: "500 ج", priceEgypt: "4500 ج", priceForeign: "5000 ج", priceUSD: "170 دولار", duration: "3 شهور", lectures: "15",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "بعد المحاضرة الأولى", amount: "2000 ج" },
+      { num: 2, when: "بعد المحاضرة الخامسة", amount: "1500 ج" },
+      { num: 3, when: "بعد المحاضرة التاسعة", amount: "1000 ج" }
+    ],
+    theory: { mode: "أونلاين لايف على زوم", day: "الأحد أو الأربعاء بالتبادل", time: "9 مساءً", duration: "2 إلى 3 ساعات", structure: "12 محاضرة" },
+    practical: { location: "الجيزة (الإسكندرية مع اكتمال العدد)", time: "يتم التنسيق على جروب الفاينال", lectures: "3", duration: "3 إلى 4 ساعات", content: "منتجات العناية بالبشرة والشعر · الكريمات · شامبوهات · غسولات · سيرم · تونر" },
+    lecturers: [{ name: "د. شيماء عبده", bio: "دكتوراه في التجميل · ترايكولوجيست معتمد من البورد الأمريكي", specialty: "تركيبات تجميلية" }],
+    zewailAccred: "شهادة من الأكاديمية بمسمى الدبلومة (120 ساعة تدريبية) + كارنيه",
+    externalAccred: [
+      { name: "شهادة خبرة من وزارة العدل", fee: "1500 ج", desc: "معتمدة بختم نسر" },
+      { name: "الجامعة الأمريكية للعلوم", fee: "2000 + 500 ج", desc: "مقرها ولاية Delaware" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "مقرها الرئيس في لندن" }
+    ],
+    targetAudience: "جميع المؤهلات العليا", syndicate: { specialist: "احترافي تركيبات تجميلية - لكل المؤهلات", technician: "—" }, centerLicense: "—"
+  },
+  {
+    id: 12, name: "دبلومة التركيبات التجميلية المتقدمة", booking: "500 ج", priceEgypt: "5000 ج", priceForeign: "5500 ج", priceUSD: "170 دولار", duration: "3 شهور", lectures: "20",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "بعد المحاضرة الأولى", amount: "3000 ج" },
+      { num: 2, when: "بعد المحاضرة الخامسة", amount: "1500 ج" },
+      { num: 3, when: "بعد المحاضرة التاسعة", amount: "1000 ج" }
+    ],
+    theory: { mode: "أونلاين لايف على زوم", day: "الأحد أو الأربعاء بالتبادل", time: "9 مساءً", duration: "2 إلى 3 ساعات", structure: "12 محاضرة" },
+    practical: { location: "الجيزة (الإسكندرية مع اكتمال العدد)", time: "يتم التنسيق على جروب الفاينال", lectures: "5", duration: "3 إلى 4 ساعات", content: "منتجات العناية بالبشرة والشعر المتقدمة" },
+    lecturers: [{ name: "د. شيماء عبده", bio: "دكتوراه في التجميل · ترايكولوجيست معتمد من البورد الأمريكي", specialty: "تركيبات متقدمة" }],
+    zewailAccred: "شهادة من الأكاديمية بمسمى الدبلومة (120 ساعة تدريبية) + كارنيه",
+    externalAccred: [
+      { name: "اللجنة النقابية (شهادة + كارنيه)", fee: "1700 + 500 ج", desc: "لجنة نقابية مقيدة بوزارة العمل" },
+      { name: "الجامعة الأمريكية للعلوم", fee: "2000 + 500 ج", desc: "مقرها ولاية Delaware" },
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "مقرها الرئيس في لندن" }
+    ],
+    targetAudience: "جميع المؤهلات العليا", syndicate: { specialist: "احترافي تركيبات تجميلية - لكل المؤهلات", technician: "—" }, centerLicense: "—"
+  },
+  {
+    id: 13, name: "دبلومة التخاطب", booking: "500 ج", priceEgypt: "3000 ج", priceForeign: "3500 ج", priceUSD: "170 دولار", duration: "3 شهور", lectures: "40",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "محاضرة الأولى", amount: "1400 ج" },
+      { num: 2, when: "العاشرة", amount: "1000 ج" },
+      { num: 3, when: "الثامنة عشر", amount: "600 ج" }
+    ],
+    theory: { mode: "أونلاين لايف على زوم", day: "السبت والثلاثاء", time: "9 مساءً", duration: "2 إلى 3 ساعات", structure: "30 محاضرة" },
+    practical: { location: "المطرية (إسكندرية · المنصورة · طنطا)", time: "يتم التنسيق على جروب الفاينال", lectures: "12", duration: "حوالي ساعتين", content: "تخاطب · تعديل سلوك · مقاييس نفسية (مسجل) · صعوبات تعلم" },
+    lecturers: [
+      { name: "د. عبد الرحمن محمد", bio: "محاضر دولي معتمد · مدير مركز التخاطب الشامل بالمطرية · دكتوراه في التربية الخاصة", specialty: "تخاطب · تعديل سلوك · صعوبات تعلم" },
+      { name: "د. زياد رفعت", bio: "أخصائي صعوبات تعلم · ماجستير في علوم الإعاقة · محاضر بمراكز التخاطب الشامل", specialty: "صعوبات تعلم" }
+    ],
+    zewailAccred: "شهادة ببرنامج الدبلومة الشاملة + كارنيه الأكاديمية",
+    externalAccred: [
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "مقرها الرئيس في لندن" },
+      { name: "الجامعة الأمريكية للعلوم", fee: "2000 + 500 ج", desc: "مقرها ولاية Delaware" },
+      { name: "جامعة طنطا (300 ساعة)", fee: "3200 ج", desc: "—" },
+      { name: "جامعة طنطا (100 ساعة)", fee: "2200 ج", desc: "—" }
+    ],
+    targetAudience: "جميع المؤهلات العليا", syndicate: { specialist: "—", technician: "—" }, centerLicense: "تنمية المهارات واللغة للطفل · عدم كتابة روشتات أو وصف أدوية"
+  },
+  {
+    id: 14, name: "دبلومة الصحة النفسية", booking: "500 ج", priceEgypt: "3000 ج", priceForeign: "3500 ج", priceUSD: "170 دولار", duration: "3 شهور", lectures: "26",
+    earlyBookingDeadline: "", introLectureDate: "", mainLectureDate: "", courseFileLink: "", courseScheduleLink: "",
+    installments: [
+      { num: 1, when: "محاضرة الأولى", amount: "1200 ج" },
+      { num: 2, when: "العاشرة", amount: "1100 ج" },
+      { num: 3, when: "الثامنة عشر", amount: "700 ج" }
+    ],
+    theory: { mode: "أونلاين لايف على زوم", day: "الاثنين والخميس", time: "9 مساءً", duration: "2 إلى 3 ساعات", structure: "26 محاضرة" },
+    practical: { location: "—", time: "—", lectures: "—", duration: "—", content: "—" },
+    lecturers: [{ name: "د. نهى فتحي", bio: "معالج نفسي إكلينيكي · مستشار أسري وتربوي · مدرب معتمد من البورد الأمريكي · دكتوراه في الصحة النفسية", specialty: "الصحة النفسية والإرشاد الأسري" }],
+    zewailAccred: "شهادة ببرنامج الدبلومة الشاملة + كارنيه الأكاديمية",
+    externalAccred: [
+      { name: "جامعة النيل الأوروبية", fee: "1500 ج", desc: "مقرها الرئيس في لندن" },
+      { name: "الجامعة الأمريكية للعلوم", fee: "2000 + 500 ج", desc: "مقرها ولاية Delaware" },
+      { name: "جامعة طنطا", fee: "2700 ج", desc: "بمسمى دورة تدريبية بختم النسر" }
+    ],
+    targetAudience: "جميع المؤهلات العليا", syndicate: { specialist: "—", technician: "—" }, centerLicense: "تنمية المهارات واللغة للطفل · عدم كتابة روشتات أو وصف أدوية"
+  }
+];
+
+// ============ STATE ============
+const STORAGE_KEY = 'zewail_courses_data_v2';
+let courses = [];
+let editingId = null;
+
+// ============ STORAGE ============
+function loadCourses() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      courses = JSON.parse(saved);
+      // Migrate old records that don't have new fields
+      courses.forEach(c => {
+        if (c.earlyBookingDeadline === undefined) c.earlyBookingDeadline = '';
+        if (c.introLectureDate === undefined) c.introLectureDate = '';
+        if (c.mainLectureDate === undefined) c.mainLectureDate = '';
+        if (c.courseFileLink === undefined) c.courseFileLink = '';
+        if (c.courseScheduleLink === undefined) c.courseScheduleLink = '';
+      });
+    } else {
+      courses = JSON.parse(JSON.stringify(defaultCourses));
+      saveCourses();
+    }
+  } catch(e) {
+    courses = JSON.parse(JSON.stringify(defaultCourses));
+  }
+}
+
+function saveCourses() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
+  } catch(e) {
+    showToast('خطأ في الحفظ: ' + e.message, true);
+  }
+}
+
+// ============ DROPDOWN ============
+function rebuildDropdown() {
+  const sel = document.getElementById('courseSelect');
+  const currentVal = sel.value;
+  sel.innerHTML = '<option value="">— اختر دبلومة —</option>';
+  courses.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+  if (currentVal && courses.find(c => c.id == currentVal)) {
+    sel.value = currentVal;
+  }
+}
+
+// ============ DISPLAY ============
+function escapeHTML(str) {
+  if (str === null || str === undefined || str === '') return '—';
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function escapeAttr(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function isValidUrl(str) {
+  if (!str) return false;
+  try { new URL(str); return true; } catch(e) { return false; }
+}
+
+function displayCourse(id) {
+  const out = document.getElementById('output');
+  if (!id) {
+    out.innerHTML = `<div class="empty-state"><div class="icon">📚</div><p>اختار دبلومة من القائمة فوق علشان تشوف كل التفاصيل</p></div>`;
+    return;
+  }
+
+  const c = courses.find(x => x.id == id);
+  if (!c) return;
+
+  const adminButtons = isAdmin ? `
+    <div class="course-actions">
+      <button onclick="openEditModal(${c.id})">✏️ تعديل</button>
+      <button class="danger" onclick="deleteCourse(${c.id})">🗑️ حذف</button>
+    </div>
+  ` : '';
+
+  // Dates section - only show if at least one date is set
+  const hasDates = c.earlyBookingDeadline || c.introLectureDate || c.mainLectureDate;
+  const datesSection = hasDates ? `
+    <div class="section dates-section">
+      <h3><span class="emoji">📅</span> المواعيد المهمة</h3>
+      <div class="info-grid">
+        ${c.earlyBookingDeadline ? `<div class="info-item"><span class="label">آخر تاريخ للحجز المبكر</span><span class="value date">${escapeHTML(c.earlyBookingDeadline)}</span></div>` : ''}
+        ${c.introLectureDate ? `<div class="info-item"><span class="label">تاريخ المحاضرة التعريفية</span><span class="value date">${escapeHTML(c.introLectureDate)}</span></div>` : ''}
+        ${c.mainLectureDate ? `<div class="info-item"><span class="label">تاريخ المحاضرة الرئيسية</span><span class="value date">${escapeHTML(c.mainLectureDate)}</span></div>` : ''}
+      </div>
+    </div>
+  ` : '';
+
+  // Links section
+  const hasLinks = c.courseFileLink || c.courseScheduleLink;
+  const linksSection = hasLinks ? `
+    <div class="section">
+      <h3><span class="emoji">🔗</span> الملفات والروابط</h3>
+      ${c.courseFileLink ? `
+        <a href="${escapeAttr(c.courseFileLink)}" target="_blank" rel="noopener" class="link-card">
+          <div class="link-info">
+            <div class="link-icon">📄</div>
+            <div>
+              <div class="link-title">ملف الدبلومة</div>
+              <div class="link-subtitle">اضغط لفتح الملف</div>
+            </div>
+          </div>
+          <div class="open-btn">فتح ←</div>
+        </a>
+      ` : ''}
+      ${c.courseScheduleLink ? `
+        <a href="${escapeAttr(c.courseScheduleLink)}" target="_blank" rel="noopener" class="link-card">
+          <div class="link-info">
+            <div class="link-icon">📊</div>
+            <div>
+              <div class="link-title">جدول الدبلومة</div>
+              <div class="link-subtitle">اضغط لفتح الجدول</div>
+            </div>
+          </div>
+          <div class="open-btn">فتح ←</div>
+        </a>
+      ` : ''}
+    </div>
+  ` : '';
+
+  let html = `
+    <div class="course-display">
+      <div class="course-title-card">
+        <div class="title-area">
+          <span class="badge">دبلومة #${c.id}</span>
+          <h2>${escapeHTML(c.name)}</h2>
+        </div>
+        ${adminButtons}
+      </div>
+
+      ${datesSection}
+
+      ${linksSection}
+
+      <div class="section">
+        <h3><span class="emoji">💰</span> الأسعار والحجز</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="label">قيمة الحجز</span><span class="value highlight">${escapeHTML(c.booking)}</span></div>
+          <div class="info-item"><span class="label">السعر للمصريين</span><span class="value price">${escapeHTML(c.priceEgypt)}</span></div>
+          <div class="info-item"><span class="label">السعر لغير المصريين</span><span class="value price">${escapeHTML(c.priceForeign)}</span></div>
+          <div class="info-item"><span class="label">بالدولار</span><span class="value price">${escapeHTML(c.priceUSD)}</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">📅</span> الأقساط</h3>
+        ${(c.installments || []).map(i => `
+          <div class="installment-row">
+            <div class="num">${escapeHTML(i.num)}</div>
+            <div class="when">${escapeHTML(i.when)}</div>
+            <div class="amount">${escapeHTML(i.amount)}</div>
+          </div>
+        `).join('') || '<div class="content-list">—</div>'}
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">⏱️</span> مدة الدبلومة وعدد المحاضرات</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="label">المدة</span><span class="value highlight">${escapeHTML(c.duration)}</span></div>
+          <div class="info-item"><span class="label">عدد المحاضرات</span><span class="value highlight">${escapeHTML(c.lectures)}</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">📖</span> النظام النظري</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="label">مكان الدراسة</span><span class="value">${escapeHTML(c.theory?.mode)}</span></div>
+          <div class="info-item"><span class="label">اليوم</span><span class="value">${escapeHTML(c.theory?.day)}</span></div>
+          <div class="info-item"><span class="label">التوقيت</span><span class="value">${escapeHTML(c.theory?.time)}</span></div>
+          <div class="info-item"><span class="label">مدة المحاضرة</span><span class="value">${escapeHTML(c.theory?.duration)}</span></div>
+        </div>
+        <div style="margin-top:12px"><div class="content-list"><strong>هيكل المحاضرات:</strong> ${escapeHTML(c.theory?.structure)}</div></div>
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">🔬</span> النظام العملي</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="label">مكان التدريب</span><span class="value">${escapeHTML(c.practical?.location)}</span></div>
+          <div class="info-item"><span class="label">الميعاد</span><span class="value">${escapeHTML(c.practical?.time)}</span></div>
+          <div class="info-item"><span class="label">عدد المحاضرات</span><span class="value">${escapeHTML(c.practical?.lectures)}</span></div>
+          <div class="info-item"><span class="label">المدة</span><span class="value">${escapeHTML(c.practical?.duration)}</span></div>
+        </div>
+        <div style="margin-top:12px"><div class="content-list"><strong>المحتوى العملي:</strong> ${escapeHTML(c.practical?.content)}</div></div>
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">👨‍🏫</span> المحاضرين</h3>
+        ${(c.lecturers || []).map(l => `
+          <div class="lecturer-card">
+            <div class="name">${escapeHTML(l.name)}</div>
+            <div class="bio">${escapeHTML(l.bio)}</div>
+            <span class="specialty">${escapeHTML(l.specialty)}</span>
+          </div>
+        `).join('') || '<div class="content-list">—</div>'}
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">🎖️</span> اعتماد زويل أكاديمي</h3>
+        <div class="content-list">${escapeHTML(c.zewailAccred)}</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">🌍</span> الاعتمادات الخارجية</h3>
+        ${(c.externalAccred || []).map(a => `
+          <div class="accred-card">
+            <div>
+              <div class="name">${escapeHTML(a.name)}</div>
+              <div class="desc">${escapeHTML(a.desc)}</div>
+            </div>
+            <div class="fee">${escapeHTML(a.fee)}</div>
+          </div>
+        `).join('') || '<div class="content-list">—</div>'}
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">🎯</span> الفئة المستهدفة</h3>
+        <div class="content-list">${escapeHTML(c.targetAudience)}</div>
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">📋</span> اشتراطات كارنيه اللجنة النقابية</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="label">المسمى الأخصائي / الشروط</span><span class="value">${escapeHTML(c.syndicate?.specialist)}</span></div>
+          <div class="info-item"><span class="label">المسمى الفني / الشروط</span><span class="value">${escapeHTML(c.syndicate?.technician)}</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><span class="emoji">🏥</span> مواصفات المركز المرخص</h3>
+        <div class="content-list">${escapeHTML(c.centerLicense)}</div>
+      </div>
+    </div>
+  `;
+  out.innerHTML = html;
+  out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============ MODAL ============
+function openAddModal() {
+  if (!requireAdmin()) return;
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'إضافة دبلومة جديدة';
+  fillForm({
+    name: '', booking: '', priceEgypt: '', priceForeign: '', priceUSD: '', duration: '', lectures: '',
+    earlyBookingDeadline: '', introLectureDate: '', mainLectureDate: '', courseFileLink: '', courseScheduleLink: '',
+    installments: [],
+    theory: { mode: '', day: '', time: '', duration: '', structure: '' },
+    practical: { location: '', time: '', lectures: '', duration: '', content: '' },
+    lecturers: [],
+    zewailAccred: '',
+    externalAccred: [],
+    targetAudience: '',
+    syndicate: { specialist: '', technician: '' },
+    centerLicense: ''
+  });
+  document.getElementById('editModal').classList.add('active');
+}
+
+function openEditModal(id) {
+  if (!requireAdmin()) return;
+  const c = courses.find(x => x.id == id);
+  if (!c) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'تعديل: ' + c.name;
+  fillForm(c);
+  document.getElementById('editModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('active');
+  editingId = null;
+}
+
+function fillForm(c) {
+  document.getElementById('f_name').value = c.name || '';
+  document.getElementById('f_booking').value = c.booking || '';
+  document.getElementById('f_priceEgypt').value = c.priceEgypt || '';
+  document.getElementById('f_priceForeign').value = c.priceForeign || '';
+  document.getElementById('f_priceUSD').value = c.priceUSD || '';
+  document.getElementById('f_duration').value = c.duration || '';
+  document.getElementById('f_lectures').value = c.lectures || '';
+  document.getElementById('f_earlyBookingDeadline').value = c.earlyBookingDeadline || '';
+  document.getElementById('f_introLectureDate').value = c.introLectureDate || '';
+  document.getElementById('f_mainLectureDate').value = c.mainLectureDate || '';
+  document.getElementById('f_courseFileLink').value = c.courseFileLink || '';
+  document.getElementById('f_courseScheduleLink').value = c.courseScheduleLink || '';
+  document.getElementById('f_th_mode').value = c.theory?.mode || '';
+  document.getElementById('f_th_day').value = c.theory?.day || '';
+  document.getElementById('f_th_time').value = c.theory?.time || '';
+  document.getElementById('f_th_duration').value = c.theory?.duration || '';
+  document.getElementById('f_th_structure').value = c.theory?.structure || '';
+  document.getElementById('f_pr_location').value = c.practical?.location || '';
+  document.getElementById('f_pr_time').value = c.practical?.time || '';
+  document.getElementById('f_pr_lectures').value = c.practical?.lectures || '';
+  document.getElementById('f_pr_duration').value = c.practical?.duration || '';
+  document.getElementById('f_pr_content').value = c.practical?.content || '';
+  document.getElementById('f_zewailAccred').value = c.zewailAccred || '';
+  document.getElementById('f_targetAudience').value = c.targetAudience || '';
+  document.getElementById('f_synd_specialist').value = c.syndicate?.specialist || '';
+  document.getElementById('f_synd_technician').value = c.syndicate?.technician || '';
+  document.getElementById('f_centerLicense').value = c.centerLicense || '';
+
+  renderInstallments(c.installments || []);
+  renderLecturers(c.lecturers || []);
+  renderAccreds(c.externalAccred || []);
+}
+
+// ============ REPEATERS ============
+function renderInstallments(items) {
+  const list = document.getElementById('installmentsList');
+  list.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'repeater-item';
+    div.innerHTML = `
+      <button type="button" class="remove-item" onclick="this.parentElement.remove()">×</button>
+      <div class="form-row cols-2" style="margin-top:24px">
+        <div class="form-group"><label>رقم القسط</label><input type="text" class="inst-num" value="${escapeAttr(item.num)}"></div>
+        <div class="form-group"><label>القيمة</label><input type="text" class="inst-amount" value="${escapeAttr(item.amount)}"></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label>الموعد</label><input type="text" class="inst-when" value="${escapeAttr(item.when)}"></div></div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function addInstallment() {
+  const list = document.getElementById('installmentsList');
+  const div = document.createElement('div');
+  div.className = 'repeater-item';
+  const nextNum = list.children.length + 1;
+  div.innerHTML = `
+    <button type="button" class="remove-item" onclick="this.parentElement.remove()">×</button>
+    <div class="form-row cols-2" style="margin-top:24px">
+      <div class="form-group"><label>رقم القسط</label><input type="text" class="inst-num" value="${nextNum}"></div>
+      <div class="form-group"><label>القيمة</label><input type="text" class="inst-amount" value=""></div>
+    </div>
+    <div class="form-row"><div class="form-group"><label>الموعد</label><input type="text" class="inst-when" value=""></div></div>
+  `;
+  list.appendChild(div);
+}
+
+function renderLecturers(items) {
+  const list = document.getElementById('lecturersList');
+  list.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'repeater-item';
+    div.innerHTML = `
+      <button type="button" class="remove-item" onclick="this.parentElement.remove()">×</button>
+      <div class="form-row" style="margin-top:24px"><div class="form-group"><label>الاسم</label><input type="text" class="lec-name" value="${escapeAttr(item.name)}"></div></div>
+      <div class="form-row"><div class="form-group"><label>السيرة الذاتية</label><textarea class="lec-bio">${escapeAttr(item.bio)}</textarea></div></div>
+      <div class="form-row"><div class="form-group"><label>التخصص</label><input type="text" class="lec-specialty" value="${escapeAttr(item.specialty)}"></div></div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function addLecturer() {
+  const list = document.getElementById('lecturersList');
+  const div = document.createElement('div');
+  div.className = 'repeater-item';
+  div.innerHTML = `
+    <button type="button" class="remove-item" onclick="this.parentElement.remove()">×</button>
+    <div class="form-row" style="margin-top:24px"><div class="form-group"><label>الاسم</label><input type="text" class="lec-name" value=""></div></div>
+    <div class="form-row"><div class="form-group"><label>السيرة الذاتية</label><textarea class="lec-bio"></textarea></div></div>
+    <div class="form-row"><div class="form-group"><label>التخصص</label><input type="text" class="lec-specialty" value=""></div></div>
+  `;
+  list.appendChild(div);
+}
+
+function renderAccreds(items) {
+  const list = document.getElementById('accredsList');
+  list.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'repeater-item';
+    div.innerHTML = `
+      <button type="button" class="remove-item" onclick="this.parentElement.remove()">×</button>
+      <div class="form-row cols-2" style="margin-top:24px">
+        <div class="form-group"><label>اسم الجهة</label><input type="text" class="acc-name" value="${escapeAttr(item.name)}"></div>
+        <div class="form-group"><label>الرسوم</label><input type="text" class="acc-fee" value="${escapeAttr(item.fee)}"></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label>الوصف</label><textarea class="acc-desc">${escapeAttr(item.desc)}</textarea></div></div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function addAccred() {
+  const list = document.getElementById('accredsList');
+  const div = document.createElement('div');
+  div.className = 'repeater-item';
+  div.innerHTML = `
+    <button type="button" class="remove-item" onclick="this.parentElement.remove()">×</button>
+    <div class="form-row cols-2" style="margin-top:24px">
+      <div class="form-group"><label>اسم الجهة</label><input type="text" class="acc-name" value=""></div>
+      <div class="form-group"><label>الرسوم</label><input type="text" class="acc-fee" value=""></div>
+    </div>
+    <div class="form-row"><div class="form-group"><label>الوصف</label><textarea class="acc-desc"></textarea></div></div>
+  `;
+  list.appendChild(div);
+}
+
+// ============ SAVE ============
+function saveCourse() {
+  if (!requireAdmin()) return;
+  const name = document.getElementById('f_name').value.trim();
+  if (!name) { showToast('اسم الدبلومة مطلوب', true); return; }
+
+  const installments = [];
+  document.querySelectorAll('#installmentsList .repeater-item').forEach(item => {
+    installments.push({
+      num: item.querySelector('.inst-num').value,
+      when: item.querySelector('.inst-when').value,
+      amount: item.querySelector('.inst-amount').value
+    });
+  });
+
+  const lecturers = [];
+  document.querySelectorAll('#lecturersList .repeater-item').forEach(item => {
+    lecturers.push({
+      name: item.querySelector('.lec-name').value,
+      bio: item.querySelector('.lec-bio').value,
+      specialty: item.querySelector('.lec-specialty').value
+    });
+  });
+
+  const externalAccred = [];
+  document.querySelectorAll('#accredsList .repeater-item').forEach(item => {
+    externalAccred.push({
+      name: item.querySelector('.acc-name').value,
+      fee: item.querySelector('.acc-fee').value,
+      desc: item.querySelector('.acc-desc').value
+    });
+  });
+
+  // Validate URLs
+  const fileLink = document.getElementById('f_courseFileLink').value.trim();
+  const scheduleLink = document.getElementById('f_courseScheduleLink').value.trim();
+  if (fileLink && !isValidUrl(fileLink)) { showToast('لينك ملف الدبلومة غير صحيح', true); return; }
+  if (scheduleLink && !isValidUrl(scheduleLink)) { showToast('لينك جدول الدبلومة غير صحيح', true); return; }
+
+  const data = {
+    name,
+    booking: document.getElementById('f_booking').value,
+    priceEgypt: document.getElementById('f_priceEgypt').value,
+    priceForeign: document.getElementById('f_priceForeign').value,
+    priceUSD: document.getElementById('f_priceUSD').value,
+    duration: document.getElementById('f_duration').value,
+    lectures: document.getElementById('f_lectures').value,
+    earlyBookingDeadline: document.getElementById('f_earlyBookingDeadline').value,
+    introLectureDate: document.getElementById('f_introLectureDate').value,
+    mainLectureDate: document.getElementById('f_mainLectureDate').value,
+    courseFileLink: fileLink,
+    courseScheduleLink: scheduleLink,
+    installments,
+    theory: {
+      mode: document.getElementById('f_th_mode').value,
+      day: document.getElementById('f_th_day').value,
+      time: document.getElementById('f_th_time').value,
+      duration: document.getElementById('f_th_duration').value,
+      structure: document.getElementById('f_th_structure').value
+    },
+    practical: {
+      location: document.getElementById('f_pr_location').value,
+      time: document.getElementById('f_pr_time').value,
+      lectures: document.getElementById('f_pr_lectures').value,
+      duration: document.getElementById('f_pr_duration').value,
+      content: document.getElementById('f_pr_content').value
+    },
+    lecturers,
+    zewailAccred: document.getElementById('f_zewailAccred').value,
+    externalAccred,
+    targetAudience: document.getElementById('f_targetAudience').value,
+    syndicate: {
+      specialist: document.getElementById('f_synd_specialist').value,
+      technician: document.getElementById('f_synd_technician').value
+    },
+    centerLicense: document.getElementById('f_centerLicense').value
+  };
+
+  if (editingId) {
+    const idx = courses.findIndex(c => c.id == editingId);
+    if (idx >= 0) {
+      courses[idx] = { ...courses[idx], ...data };
+    }
+    showToast('تم حفظ التعديلات ✓');
+  } else {
+    const newId = courses.length ? Math.max(...courses.map(c => c.id)) + 1 : 1;
+    courses.push({ id: newId, ...data });
+    showToast('تم إضافة الدبلومة ✓');
+  }
+
+  saveCourses();
+  rebuildDropdown();
+  const targetId = editingId || courses[courses.length - 1].id;
+  document.getElementById('courseSelect').value = targetId;
+  displayCourse(targetId);
+  closeModal();
+}
+
+// ============ DELETE ============
+function deleteCourse(id) {
+  if (!requireAdmin()) return;
+  const c = courses.find(x => x.id == id);
+  if (!c) return;
+  if (!confirm(`هل أنت متأكد من حذف "${c.name}"؟`)) return;
+  courses = courses.filter(x => x.id != id);
+  saveCourses();
+  rebuildDropdown();
+  document.getElementById('courseSelect').value = '';
+  displayCourse('');
+  showToast('تم الحذف ✓');
+}
+
+// ============ EXPORT / IMPORT ============
+function exportData() {
+  if (!requireAdmin()) return;
+  const blob = new Blob([JSON.stringify(courses, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `zewail_backup_${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('تم تصدير النسخة الاحتياطية ✓');
+}
+
+function importData(event) {
+  if (!requireAdmin()) { event.target.value = ''; return; }
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error('الملف غير صحيح');
+      if (!confirm('سيتم استبدال البيانات الحالية بالبيانات من الملف. هل تريد المتابعة؟')) return;
+      courses = data;
+      // Migrate
+      courses.forEach(c => {
+        if (c.earlyBookingDeadline === undefined) c.earlyBookingDeadline = '';
+        if (c.introLectureDate === undefined) c.introLectureDate = '';
+        if (c.mainLectureDate === undefined) c.mainLectureDate = '';
+        if (c.courseFileLink === undefined) c.courseFileLink = '';
+        if (c.courseScheduleLink === undefined) c.courseScheduleLink = '';
+      });
+      saveCourses();
+      rebuildDropdown();
+      document.getElementById('courseSelect').value = '';
+      displayCourse('');
+      showToast('تم استيراد النسخة ✓');
+    } catch(err) {
+      showToast('خطأ في الملف: ' + err.message, true);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function resetData() {
+  if (!requireAdmin()) return;
+  if (!confirm('سيتم استعادة كل البيانات الافتراضية وحذف أي تعديلات. هل أنت متأكد؟')) return;
+  courses = JSON.parse(JSON.stringify(defaultCourses));
+  saveCourses();
+  rebuildDropdown();
+  document.getElementById('courseSelect').value = '';
+  displayCourse('');
+  showToast('تم استعادة البيانات الافتراضية ✓');
+}
+
+// ============ TOAST ============
+function showToast(msg, isError) {
+  const toast = document.createElement('div');
+  toast.className = 'toast' + (isError ? ' error' : '');
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ============ INIT ============
+loadCourses();
+rebuildDropdown();
+checkAdminSession();
+
+// Close modals on overlay click
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('passwordModal').addEventListener('click', function(e) {
+  if (e.target === this) closePasswordModal();
+});
+</script>
+
+</body>
+</html>
