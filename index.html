@@ -885,6 +885,54 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
   color: white;
 }
 .section.accordion.open h3 .accordion-arrow { color: var(--accent); }
+
+/* ===== DARK MODE ===== */
+body.dark-mode {
+  --bg: #1a1a2e;
+  --bg-soft: #16213e;
+  --card: #0f3460;
+  --ink: #e0e0e0;
+  --ink-soft: #a0a0b0;
+  --line: #2a2a4a;
+  background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 100%);
+}
+body.dark-mode .selector-card,
+body.dark-mode .section,
+body.dark-mode .empty-state { background: #1e1e3a; border-color: #2a2a5a; }
+body.dark-mode select,
+body.dark-mode input,
+body.dark-mode textarea { background: #0f0f2a; color: #e0e0e0; border-color: #3a3a6a; }
+body.dark-mode .modal { background: #1e1e3a; }
+body.dark-mode .modal-footer { background: #1e1e3a; border-color: #2a2a5a; }
+body.dark-mode .info-item { background: #151530; }
+body.dark-mode .repeater-item { background: #151530; border-color: #2a2a5a; }
+body.dark-mode .form-section { background: #151530; }
+body.dark-mode .installment-row { background: linear-gradient(to left, #1a1a35 0%, #151530 100%); }
+body.dark-mode .lecturer-card { background: linear-gradient(135deg, #1a1a35 0%, #151530 100%); }
+body.dark-mode .link-card { background: linear-gradient(135deg, #151530 0%, #1e1e3a 100%); color: #e0e0e0; }
+body.dark-mode .content-list { background: #151530; color: #e0e0e0; }
+body.dark-mode .dept-card { background: linear-gradient(135deg, #1a1a35 0%, #151530 100%); }
+body.dark-mode .accred-card { background: #151530; }
+body.dark-mode .help-banner { background: linear-gradient(135deg, #1a1a35 0%, #151530 100%); }
+body.dark-mode .section.accordion h3:hover { background: #151530; }
+
+.dark-toggle-btn {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+.dark-toggle-btn:hover { background: rgba(255,255,255,0.2); }
 </style>
 </head>
 <body>
@@ -906,6 +954,7 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
           <p>دليل الدبلومات والكورسات التدريبية الشامل</p>
         </div>
       </div>
+      <button class="dark-toggle-btn" onclick="toggleDarkMode()" id="darkToggleBtn">🌙 ليلي</button>
       <div class="admin-status locked" id="adminStatus" onclick="toggleAdmin()">
         <span id="adminStatusIcon">🔒</span>
         <span id="adminStatusText">دخول الأدمن</span>
@@ -917,6 +966,7 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
       <button class="tool-btn admin-only" onclick="document.getElementById('importFile').click()">📂 استيراد نسخة</button>
       <button class="tool-btn admin-only" onclick="resetData()">🔄 استعادة الافتراضي</button>
       <button class="tool-btn admin-only" id="manageUsersBtn" onclick="openUsersModal()" style="display:none">👥 إدارة المستخدمين</button>
+      <button class="tool-btn admin-only show" onclick="openChangeMyPassword()" id="changePwdBtn" style="display:none">🔑 تغيير باسوردي</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
@@ -1047,6 +1097,43 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
     <div class="modal-footer">
       <button class="btn btn-primary" onclick="saveEditUser()">💾 حفظ</button>
       <button class="btn btn-secondary" onclick="closeEditUserModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CHANGE MY PASSWORD MODAL ============ -->
+<div class="modal-overlay" id="changeMyPwdModal">
+  <div class="modal small">
+    <div class="modal-header">
+      <h2>🔑 تغيير باسوردي</h2>
+      <button class="close-btn" onclick="document.getElementById('changeMyPwdModal').classList.remove('active')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:12px">
+        <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">الباسورد الحالي</label>
+        <div style="position:relative">
+          <input type="password" id="currentPwdInput" placeholder="••••••••">
+          <button onclick="togglePwd('currentPwdInput')" type="button" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px">👁️</button>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">الباسورد الجديد</label>
+        <div style="position:relative">
+          <input type="password" id="newPwdInput" placeholder="••••••••">
+          <button onclick="togglePwd('newPwdInput')" type="button" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px">👁️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">تأكيد الباسورد الجديد</label>
+        <div style="position:relative">
+          <input type="password" id="confirmPwdInput" placeholder="••••••••">
+          <button onclick="togglePwd('confirmPwdInput')" type="button" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px">👁️</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="submitChangeMyPassword()">💾 تغيير</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('changeMyPwdModal').classList.remove('active')">إلغاء</button>
     </div>
   </div>
 </div>
@@ -1209,7 +1296,7 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, deleteUser, updateEmail, updatePassword, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, deleteUser, updateEmail, updatePassword, fetchSignInMethodsForEmail, sendPasswordResetEmail, updatePassword as fbUpdatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ===== FIREBASE CONFIG =====
 const firebaseConfig = {
@@ -1227,7 +1314,7 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 
 // ===== OWNER EMAIL (محمي - لا يمكن حذفه أو تعديله من أي أدمن) =====
-const OWNER_EMAIL = 'Dr.Eslam@zewailacademy.com';
+const OWNER_EMAIL = 'eslam.hammad1000@gmail.com';
 
 // ===== FIREBASE FUNCTIONS (exposed globally) =====
 
@@ -1400,6 +1487,37 @@ onAuthStateChanged(auth, (user) => {
   if (window.onAuthStateChange) window.onAuthStateChange(user);
 });
 
+// تغيير باسورد المستخدم الحالي
+window.firebaseChangeMyPassword = async function(currentPassword, newPassword) {
+  try {
+    const user = auth.currentUser;
+    if (!user) return { success: false, error: 'مش مسجل دخول' };
+    // Re-authenticate first
+    const { EmailAuthProvider, reauthenticateWithCredential } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    await reauthenticateWithCredential(user, credential);
+    await fbUpdatePassword(user, newPassword);
+    return { success: true };
+  } catch(e) {
+    let msg = 'خطأ في تغيير الباسورد';
+    if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') msg = 'الباسورد الحالي غلط';
+    if (e.code === 'auth/weak-password') msg = 'الباسورد الجديد ضعيف (6 أحرف على الأقل)';
+    return { success: false, error: msg };
+  }
+};
+
+// إرسال reset email لأي مستخدم (المالك بس)
+window.firebaseSendResetEmail = async function(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { success: true };
+  } catch(e) {
+    let msg = 'خطأ في إرسال الإيميل';
+    if (e.code === 'auth/user-not-found') msg = 'الإيميل ده مش موجود';
+    return { success: false, error: msg };
+  }
+};
+
 // Signal that Firebase is ready
 window.firebaseReady = true;
 window.dispatchEvent(new Event('firebaseReady'));
@@ -1409,7 +1527,7 @@ console.log('✅ Firebase initialized with Auth');
 
 <script>
 // ============ AUTH - Firebase Email/Password ============
-const OWNER_EMAIL_LOCAL = 'dr.eslam@zewailacademy.com'; // lowercase للمقارنة
+const OWNER_EMAIL_LOCAL = 'eslam.hammad1000@gmail.com'; // lowercase للمقارنة
 let isAdmin = false;
 let isOwner = false;
 let currentUserEmail = '';
@@ -1475,6 +1593,68 @@ function updateAdminUI() {
   // Re-render current course to show/hide edit buttons
   const sel = document.getElementById('courseSelect');
   if (sel.value) displayCourse(sel.value);
+  // Show/hide change password button
+  const cpBtn = document.getElementById('changePwdBtn');
+  if (cpBtn) cpBtn.style.display = isAdmin ? 'flex' : 'none';
+}
+
+// ===== DARK MODE =====
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('za_dark_mode', isDark ? '1' : '0');
+  const btn = document.getElementById('darkToggleBtn');
+  btn.textContent = isDark ? '☀️ نهاري' : '🌙 ليلي';
+}
+
+function initDarkMode() {
+  const saved = localStorage.getItem('za_dark_mode');
+  if (saved === '1') {
+    document.body.classList.add('dark-mode');
+    const btn = document.getElementById('darkToggleBtn');
+    if (btn) btn.textContent = '☀️ نهاري';
+  }
+}
+
+// ===== CHANGE MY PASSWORD =====
+function openChangeMyPassword() {
+  if (!isAdmin) return;
+  document.getElementById('currentPwdInput').value = '';
+  document.getElementById('newPwdInput').value = '';
+  document.getElementById('confirmPwdInput').value = '';
+  document.getElementById('changeMyPwdModal').classList.add('active');
+}
+
+function togglePwd(id) {
+  const inp = document.getElementById(id);
+  if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+async function submitChangeMyPassword() {
+  const current = document.getElementById('currentPwdInput').value;
+  const newPwd = document.getElementById('newPwdInput').value;
+  const confirm = document.getElementById('confirmPwdInput').value;
+  if (!current || !newPwd || !confirm) { showToast('أدخل كل الحقول', true); return; }
+  if (newPwd.length < 6) { showToast('الباسورد الجديد لازم 6 أحرف على الأقل', true); return; }
+  if (newPwd !== confirm) { showToast('الباسورد الجديد مش متطابق', true); return; }
+  const result = await window.firebaseChangeMyPassword(current, newPwd);
+  if (result.success) {
+    document.getElementById('changeMyPwdModal').classList.remove('active');
+    showToast('✅ تم تغيير الباسورد بنجاح');
+  } else {
+    showToast(result.error, true);
+  }
+}
+
+// ===== RESET USER PASSWORD (للمالك) =====
+async function resetUserPassword(email) {
+  if (!isOwner) { showToast('هذه الميزة للمالك فقط', true); return; }
+  if (!confirm(`هيتبعت إيميل reset للباسورد على "${email}" - متأكد؟`)) return;
+  const result = await window.firebaseSendResetEmail(email);
+  if (result.success) {
+    showToast(`✅ تم إرسال إيميل تغيير الباسورد على ${email}`);
+  } else {
+    showToast(result.error, true);
+  }
 }
 
 function toggleAdmin() {
@@ -1551,6 +1731,7 @@ async function loadUsersList() {
     const ownerBadge = isOwnerRow ? ' <span style="background:gold;color:#333;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">👑 مالك</span>' : '';
     const actions = isOwnerRow ? '<span style="color:var(--ink-soft);font-size:13px">محمي</span>' :
       `<button onclick="openEditUserModal('${u.uid}','${u.email}','${u.role}')" style="background:var(--blue);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;margin-left:4px">✏️ تعديل</button>
+       <button onclick="resetUserPassword('${u.email}')" style="background:var(--gold);color:#333;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;margin-left:4px">🔑 reset</button>
        <button onclick="deleteUserConfirm('${u.uid}','${u.email}')" style="background:var(--red);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px">🗑️ حذف</button>`;
     html += `<tr style="border-bottom:1px solid var(--line)"><td style="padding:12px;direction:ltr;text-align:left">${u.email}${ownerBadge}</td><td style="padding:12px;text-align:center">${u.role==='admin'?'👨‍💼 أدمن':u.role}</td><td style="padding:12px;text-align:center">${actions}</td></tr>`;
   });
@@ -2884,6 +3065,8 @@ function initApp() {
   loadCourses(); // async - will show loading indicator
 }
 
+initDarkMode();
+
 if (window.firebaseReady) {
   initApp();
 } else {
@@ -2912,6 +3095,9 @@ document.getElementById('usersModal').addEventListener('click', function(e) {
 });
 document.getElementById('editUserModal').addEventListener('click', function(e) {
   if (e.target === this) closeEditUserModal();
+});
+document.getElementById('changeMyPwdModal').addEventListener('click', function(e) {
+  if (e.target === this) e.target.classList.remove('active');
 });
 </script>
 
