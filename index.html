@@ -1744,23 +1744,16 @@ async function submitPassword() {
 
   if (!window.firebaseLogin) { showToast('Firebase غير جاهز، حاول بعد ثانية', true); btn.textContent = 'دخول'; btn.disabled = false; return; }
 
-  // تحقق من قائمة المحظورين أولاً
-  const isBanned = await window.firebaseCheckBanned(email);
-  if (isBanned) {
-    btn.textContent = 'دخول'; btn.disabled = false;
-    showToast('🚫 هذا الحساب محظور - تواصل مع المالك', true);
-    document.getElementById('loginPassword').value = '';
-    return;
-  }
-
-  // تحقق إن الإيميل موجود في قائمة المستخدمين المعتمدين
-  const users = await window.firebaseGetUsers();
-  const isApproved = users.some(u => u.email.toLowerCase() === email.toLowerCase());
-  if (!isApproved) {
-    btn.textContent = 'دخول'; btn.disabled = false;
-    showToast('🚫 هذا الحساب غير مصرح له بالدخول', true);
-    document.getElementById('loginPassword').value = '';
-    return;
+  // تحقق من قائمة المحظورين فقط - الباقي Firebase Auth يتحكم فيه
+  const isOwnerEmail = email.toLowerCase() === OWNER_EMAIL_LOCAL;
+  if (!isOwnerEmail) {
+    const isBannedCheck = await window.firebaseCheckBanned(email);
+    if (isBannedCheck) {
+      btn.textContent = 'دخول'; btn.disabled = false;
+      showToast('🚫 هذا الحساب محظور - تواصل مع المالك', true);
+      document.getElementById('loginPassword').value = '';
+      return;
+    }
   }
 
   const result = await window.firebaseLogin(email, password);
