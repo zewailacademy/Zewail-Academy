@@ -1047,7 +1047,8 @@ body.dark-mode .section.accordion h3:hover { background: #151530; }
           <div class="form-group">
             <label>الصلاحية</label>
             <select id="newUserRole">
-              <option value="admin">أدمن</option>
+              <option value="admin">👨‍💼 أدمن</option>
+              <option value="owner">👑 مالك</option>
             </select>
           </div>
         </div>
@@ -1093,7 +1094,8 @@ body.dark-mode .section.accordion h3:hover { background: #151530; }
       <div class="form-group">
         <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">الصلاحية</label>
         <select id="editUserRole">
-          <option value="admin">أدمن</option>
+          <option value="admin">👨‍💼 أدمن</option>
+          <option value="owner">👑 مالك</option>
         </select>
       </div>
     </div>
@@ -1484,6 +1486,22 @@ window.firebaseGetUsers = async function() {
   } catch(e) { return []; }
 };
 
+// جلب مستخدم واحد بالـ UID
+window.firebaseGetUserById = async function(uid) {
+  try {
+    const snap = await get(ref(db, 'zewail_users/' + uid));
+    return snap.exists() ? snap.val() : null;
+  } catch(e) { return null; }
+};
+
+// حفظ بيانات مستخدم
+window.firebaseSaveUserData = async function(uid, data) {
+  try {
+    await set(ref(db, 'zewail_users/' + uid), data);
+    return true;
+  } catch(e) { return false; }
+};
+
 // مراقبة حالة تسجيل الدخول
 onAuthStateChanged(auth, (user) => {
   window.currentFirebaseUser = user;
@@ -1747,7 +1765,7 @@ async function loadUsersList() {
   let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:Tajawal,sans-serif">';
   html += '<thead><tr style="background:var(--bg);color:white"><th style="padding:10px;text-align:right">الإيميل</th><th style="padding:10px">الصلاحية</th><th style="padding:10px">الباسورد الحالي</th><th style="padding:10px">إجراءات</th></tr></thead><tbody>';
   users.forEach(u => {
-    const isOwnerRow = u.email.toLowerCase() === OWNER_EMAIL_LOCAL;
+    const isOwnerRow = u.email.toLowerCase() === OWNER_EMAIL_LOCAL || u.role === 'owner';
     const ownerBadge = isOwnerRow ? ' <span style="background:gold;color:#333;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">👑 مالك</span>' : '';
     // فك تشفير الباسورد للمالك فقط
     let pwdDisplay = '';
@@ -1758,7 +1776,10 @@ async function loadUsersList() {
     const actions = isOwnerRow ? '<span style="color:var(--ink-soft);font-size:13px">محمي</span>' :
       `<button onclick="openEditUserModal('${u.uid}','${u.email}','${u.role}','${u.pwd||''}')" style="background:var(--blue);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;margin-left:4px">✏️ تعديل</button>
        <button onclick="deleteUserConfirm('${u.uid}','${u.email}')" style="background:var(--red);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px">🗑️ حذف</button>`;
-    html += `<tr style="border-bottom:1px solid var(--line)"><td style="padding:12px;direction:ltr;text-align:left">${u.email}${ownerBadge}</td><td style="padding:12px;text-align:center">${u.role==='admin'?'👨‍💼 أدمن':u.role}</td>${pwdCell}<td style="padding:12px;text-align:center">${actions}</td></tr>`;
+    // لو مفيش باسورد محفوظ - اضف زرار "سجل الباسورد"
+    const setPwdBtn = (!isOwnerRow && !u.pwd) ? 
+      `<div style="margin-top:6px"><button onclick="setUserPassword('${u.uid}')" style="background:var(--gold);color:#333;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:12px;font-weight:700">⚠️ سجل الباسورد</button></div>` : '';
+    html += `<tr style="border-bottom:1px solid var(--line)"><td style="padding:12px;direction:ltr;text-align:left">${u.email}${ownerBadge}</td><td style="padding:12px;text-align:center">${u.role==='owner'?'👑 مالك':u.role==='admin'?'👨‍💼 أدمن':u.role}</td>${pwdCell}<td style="padding:12px;text-align:center">${actions}${setPwdBtn}</td></tr>`;
   });
   html += '</tbody></table></div>';
   container.innerHTML = html;
@@ -1804,6 +1825,20 @@ async function saveEditUser() {
   const result = await window.firebaseUpdateUser(uid, oldEmail, newEmail, newPassword, role, currentUserEmail);
   if (result.success) { showToast('✅ تم التعديل'); closeEditUserModal(); await loadUsersList(); }
   else { showToast(result.error, true); }
+}
+
+async function setUserPassword(uid) {
+  const pwd = prompt('أدخل الباسورد الحالي لهذا المستخدم عشان تسجله في السيستم:');
+  if (!pwd) return;
+  if (pwd.length < 6) { showToast('الباسورد لازم 6 أحرف على الأقل', true); return; }
+  try {
+    const snap = await window.firebaseGetUserById(uid);
+    if (!snap) { showToast('مش لاقي المستخدم', true); return; }
+    const userData = { ...snap, pwd: btoa(unescape(encodeURIComponent(pwd))), updatedAt: Date.now() };
+    await window.firebaseSaveUserData(uid, userData);
+    showToast('✅ تم حفظ الباسورد بنجاح');
+    await loadUsersList();
+  } catch(e) { showToast('خطأ: ' + e.message, true); }
 }
 
 async function deleteUserConfirm(uid, email) {
