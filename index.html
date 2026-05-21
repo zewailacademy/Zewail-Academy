@@ -1015,12 +1015,9 @@ body.dark-mode .section.accordion h3:hover { background: #151530; }
         </div>
       </div>
     </div>
-    <div class="modal-footer" style="flex-direction:column;gap:8px">
-      <div style="display:flex;gap:8px;width:100%">
-        <button class="btn btn-primary" onclick="submitPassword()" id="loginSubmitBtn" style="flex:1">دخول</button>
-        <button class="btn btn-secondary" onclick="closePasswordModal()" style="flex:1">إلغاء</button>
-      </div>
-      <button onclick="forgotPassword()" type="button" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:Tajawal,sans-serif;font-size:14px;font-weight:600;text-decoration:underline">🔑 نسيت كلمة المرور؟</button>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="submitPassword()" id="loginSubmitBtn">دخول</button>
+      <button class="btn btn-secondary" onclick="closePasswordModal()">إلغاء</button>
     </div>
   </div>
 </div>
@@ -1432,17 +1429,51 @@ window.firebaseAddUser = async function(email, password, role) {
   }
 };
 
-// حذف مستخدم (بحماية المالك)
+// حذف مستخدم + إضافته لقائمة المحظورين
 window.firebaseDeleteUser = async function(uid, email) {
   try {
     if (email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
       return { success: false, error: 'لا يمكن حذف المالك' };
     }
+    // احذفه من قائمة المستخدمين
     await remove(ref(db, 'zewail_users/' + uid));
+    // أضفه لقائمة المحظورين
+    const bannedKey = email.toLowerCase().replace(/[.@]/g, '_');
+    await set(ref(db, 'zewail_banned/' + bannedKey), {
+      email: email.toLowerCase(),
+      bannedAt: Date.now()
+    });
     return { success: true };
   } catch(e) {
-    return { success: false, error: 'خطأ في الحذف' };
+    return { success: false, error: 'خطأ في الحذف: ' + e.message };
   }
+};
+
+// فحص لو الإيميل محظور
+window.firebaseCheckBanned = async function(email) {
+  try {
+    const bannedKey = email.toLowerCase().replace(/[.@]/g, '_');
+    const snap = await get(ref(db, 'zewail_banned/' + bannedKey));
+    return snap.exists();
+  } catch(e) { return false; }
+};
+
+// جلب كل المحظورين
+window.firebaseGetBanned = async function() {
+  try {
+    const snap = await get(ref(db, 'zewail_banned'));
+    if (!snap.exists()) return [];
+    return Object.values(snap.val());
+  } catch(e) { return []; }
+};
+
+// رفع الحظر عن مستخدم
+window.firebaseUnbanUser = async function(email) {
+  try {
+    const bannedKey = email.toLowerCase().replace(/[.@]/g, '_');
+    await remove(ref(db, 'zewail_banned/' + bannedKey));
+    return { success: true };
+  } catch(e) { return { success: false, error: e.message }; }
 };
 
 // تعديل بيانات مستخدم + حفظ الباسورد الجديد
@@ -1559,12 +1590,12 @@ window.onAuthStateChange = function(user) {
   if (user) {
     currentUserEmail = user.email.toLowerCase();
     currentUserUid = user.uid;
-    isOwner = currentUserEmail === OWNER_EMAIL_LOCAL;
+    // المالك الحقيقي بس لو الإيميل مطابق للإيميل المحدد في الكود
+    isOwner = (currentUserEmail === OWNER_EMAIL_LOCAL);
     isAdmin = true;
     sessionStorage.setItem('za_admin_session', 'active');
     sessionStorage.setItem('za_user_email', currentUserEmail);
     updateAdminUI();
-    // إظهار زر إدارة المستخدمين للمالك فقط
     const btn = document.getElementById('manageUsersBtn');
     if (btn) btn.style.display = isOwner ? 'flex' : 'none';
   } else {
@@ -1709,8 +1740,29 @@ async function submitPassword() {
   const password = document.getElementById('loginPassword').value;
   if (!email || !password) { showToast('أدخل الإيميل والباسورد', true); return; }
   const btn = document.getElementById('loginSubmitBtn');
-  btn.textContent = 'جاري الدخول...'; btn.disabled = true;
+  btn.textContent = 'جاري التحقق...'; btn.disabled = true;
+
   if (!window.firebaseLogin) { showToast('Firebase غير جاهز، حاول بعد ثانية', true); btn.textContent = 'دخول'; btn.disabled = false; return; }
+
+  // تحقق من قائمة المحظورين أولاً
+  const isBanned = await window.firebaseCheckBanned(email);
+  if (isBanned) {
+    btn.textContent = 'دخول'; btn.disabled = false;
+    showToast('🚫 هذا الحساب محظور - تواصل مع المالك', true);
+    document.getElementById('loginPassword').value = '';
+    return;
+  }
+
+  // تحقق إن الإيميل موجود في قائمة المستخدمين المعتمدين
+  const users = await window.firebaseGetUsers();
+  const isApproved = users.some(u => u.email.toLowerCase() === email.toLowerCase());
+  if (!isApproved) {
+    btn.textContent = 'دخول'; btn.disabled = false;
+    showToast('🚫 هذا الحساب غير مصرح له بالدخول', true);
+    document.getElementById('loginPassword').value = '';
+    return;
+  }
+
   const result = await window.firebaseLogin(email, password);
   btn.textContent = 'دخول'; btn.disabled = false;
   if (result.success) {
@@ -1761,28 +1813,57 @@ async function loadUsersList() {
   const container = document.getElementById('usersListContainer');
   container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-soft)">جاري التحميل...</div>';
   const users = await window.firebaseGetUsers();
+  // جيب المحظورين
+  let bannedUsers = [];
+  try {
+    const snap = await window.firebaseGetBanned();
+    bannedUsers = snap || [];
+  } catch(e) {}
+
   if (!users || users.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px">لا يوجد مستخدمين</div>'; return; }
   let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:Tajawal,sans-serif">';
-  html += '<thead><tr style="background:var(--bg);color:white"><th style="padding:10px;text-align:right">الإيميل</th><th style="padding:10px">الصلاحية</th><th style="padding:10px">الباسورد الحالي</th><th style="padding:10px">إجراءات</th></tr></thead><tbody>';
+  html += '<thead><tr style="background:var(--bg);color:white"><th style="padding:10px;text-align:right">الإيميل</th><th style="padding:10px">الصلاحية</th><th style="padding:10px">إجراءات</th></tr></thead><tbody>';
   users.forEach(u => {
-    const isOwnerRow = u.email.toLowerCase() === OWNER_EMAIL_LOCAL || u.role === 'owner';
+    const isOwnerRow = u.email.toLowerCase() === OWNER_EMAIL_LOCAL;
     const ownerBadge = isOwnerRow ? ' <span style="background:gold;color:#333;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">👑 مالك</span>' : '';
-    // فك تشفير الباسورد للمالك فقط
-    let pwdDisplay = '';
-    if (!isOwnerRow && u.pwd) {
-      try { pwdDisplay = decodeURIComponent(escape(atob(u.pwd))); } catch(e) { pwdDisplay = '---'; }
-    }
-    const pwdCell = !isOwnerRow ? `<td style="padding:12px;text-align:center;direction:ltr;font-family:monospace;font-size:13px;color:var(--green);font-weight:700">${pwdDisplay || '---'}</td>` : `<td style="padding:12px;text-align:center;color:var(--ink-soft);font-size:13px">—</td>`;
+
     const actions = isOwnerRow ? '<span style="color:var(--ink-soft);font-size:13px">محمي</span>' :
       `<button onclick="openEditUserModal('${u.uid}','${u.email}','${u.role}','${u.pwd||''}')" style="background:var(--blue);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;margin-left:4px">✏️ تعديل</button>
        <button onclick="deleteUserConfirm('${u.uid}','${u.email}')" style="background:var(--red);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px">🗑️ حذف</button>`;
-    // لو مفيش باسورد محفوظ - اضف زرار "سجل الباسورد"
-    const setPwdBtn = (!isOwnerRow && !u.pwd) ? 
-      `<div style="margin-top:6px"><button onclick="setUserPassword('${u.uid}')" style="background:var(--gold);color:#333;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:12px;font-weight:700">⚠️ سجل الباسورد</button></div>` : '';
-    html += `<tr style="border-bottom:1px solid var(--line)"><td style="padding:12px;direction:ltr;text-align:left">${u.email}${ownerBadge}</td><td style="padding:12px;text-align:center">${u.role==='owner'?'👑 مالك':u.role==='admin'?'👨‍💼 أدمن':u.role}</td>${pwdCell}<td style="padding:12px;text-align:center">${actions}${setPwdBtn}</td></tr>`;
+
+    html += `<tr style="border-bottom:1px solid var(--line)"><td style="padding:12px;direction:ltr;text-align:left">${u.email}${ownerBadge}</td><td style="padding:12px;text-align:center">${u.role==='owner'?'👑 مالك':u.role==='admin'?'👨‍💼 أدمن':u.role}</td><td style="padding:12px;text-align:center">${actions}</td></tr>`;
   });
   html += '</tbody></table></div>';
+
+  // قسم المحظورين
+  if (bannedUsers.length > 0) {
+    html += '<div style="margin-top:16px"><h4 style="color:var(--red);margin-bottom:8px;font-family:Tajawal,sans-serif">🚫 المحظورون (لا يمكنهم تسجيل الدخول)</h4>';
+    html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:Tajawal,sans-serif">';
+    html += '<thead><tr style="background:var(--red);color:white"><th style="padding:8px;text-align:right">الإيميل</th><th style="padding:8px">رفع الحظر</th></tr></thead><tbody>';
+    bannedUsers.forEach(b => {
+      html += `<tr style="border-bottom:1px solid var(--line)">
+        <td style="padding:10px;direction:ltr;text-align:left;color:var(--red)">${b.email}</td>
+        <td style="padding:10px;text-align:center">
+          <button onclick="unbanUser('${b.email}')" style="background:var(--green);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px">✅ رفع الحظر</button>
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table></div></div>';
+  }
+
   container.innerHTML = html;
+}
+
+async function unbanUser(email) {
+  if (!confirm(`رفع الحظر عن "${email}"؟ هيقدر يسجل دخول تاني.`)) return;
+  // لازم تضيفه تاني في المستخدمين
+  const result = await window.firebaseUnbanUser(email);
+  if (result.success) {
+    showToast('✅ تم رفع الحظر - اضفه تاني من إضافة مستخدم');
+    await loadUsersList();
+  } else {
+    showToast(result.error, true);
+  }
 }
 
 async function addNewUser() {
@@ -1791,7 +1872,9 @@ async function addNewUser() {
   const role = document.getElementById('newUserRole').value;
   if (!email || !password) { showToast('أدخل الإيميل والباسورد', true); return; }
   if (password.length < 6) { showToast('الباسورد لازم 6 أحرف على الأقل', true); return; }
-  const result = await window.firebaseAddUser(email, password, role);
+  // منع أي حد يتضاف كـ owner غير الإيميل المحدد في الكود
+  const finalRole = (role === 'owner' && email.toLowerCase() !== OWNER_EMAIL_LOCAL) ? 'admin' : role;
+  const result = await window.firebaseAddUser(email, password, finalRole);
   if (result.success) {
     showToast('✅ تم إضافة المستخدم بنجاح');
     document.getElementById('newUserEmail').value = '';
