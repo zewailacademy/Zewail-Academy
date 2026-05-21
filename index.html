@@ -967,6 +967,11 @@ body.dark-mode .section.accordion h3:hover { background: #151530; }
       <button class="tool-btn admin-only" onclick="resetData()">🔄 استعادة الافتراضي</button>
       <button class="tool-btn admin-only" id="manageUsersBtn" onclick="openUsersModal()" style="display:none">👥 إدارة المستخدمين</button>
       <button class="tool-btn admin-only show" onclick="openChangeMyPassword()" id="changePwdBtn" style="display:none">🔑 تغيير باسوردي</button>
+      <label class="tool-btn admin-only" id="importExcelBtn" style="display:none;cursor:pointer">
+        📥 استيراد Excel
+        <input type="file" accept=".xlsx" onchange="importFromExcel(this)" style="display:none">
+      </label>
+      <a class="tool-btn admin-only" id="downloadTemplateBtn" href="#" onclick="showToast('جاري التحضير...')" style="display:none;text-decoration:none">📋 Template Excel</a>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
@@ -1579,15 +1584,28 @@ let currentUserEmail = '';
 let currentUserUid = '';
 
 // مراقبة حالة تسجيل الدخول من Firebase
-window.onAuthStateChange = function(user) {
+window.onAuthStateChange = async function(user) {
   if (user) {
     currentUserEmail = user.email.toLowerCase();
     currentUserUid = user.uid;
-    // المالك الحقيقي بس لو الإيميل مطابق للإيميل المحدد في الكود
     isOwner = (currentUserEmail === OWNER_EMAIL_LOCAL);
     isAdmin = true;
     sessionStorage.setItem('za_admin_session', 'active');
     sessionStorage.setItem('za_user_email', currentUserEmail);
+    // لو مش المالك - أضفه في zewail_users تلقائياً لو مش موجود
+    if (!isOwner && window.firebaseReady) {
+      try {
+        const snap = await window.firebaseGetUserById(user.uid);
+        if (!snap) {
+          await window.firebaseSaveUserData(user.uid, {
+            email: currentUserEmail,
+            role: 'admin',
+            uid: user.uid,
+            createdAt: Date.now()
+          });
+        }
+      } catch(e) {}
+    }
     updateAdminUI();
     const btn = document.getElementById('manageUsersBtn');
     if (btn) btn.style.display = isOwner ? 'flex' : 'none';
@@ -1641,6 +1659,11 @@ function updateAdminUI() {
   // Show/hide change password button
   const cpBtn = document.getElementById('changePwdBtn');
   if (cpBtn) cpBtn.style.display = isAdmin ? 'flex' : 'none';
+  // Show/hide import buttons
+  const importBtn = document.getElementById('importExcelBtn');
+  if (importBtn) importBtn.style.display = isAdmin ? 'flex' : 'none';
+  const templateBtn = document.getElementById('downloadTemplateBtn');
+  if (templateBtn) templateBtn.style.display = isAdmin ? 'flex' : 'none';
 }
 
 // ===== DARK MODE =====
@@ -3191,6 +3214,173 @@ function toWhatsappNumber(phone) {
   return p;
 }
 
+
+// ============ IMPORT FROM EXCEL ============
+async function importFromExcel(input) {
+  if (!requireAdmin()) return;
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+
+  showToast('جاري قراءة الملف...');
+
+  try {
+    // قراءة الملف كـ ArrayBuffer
+    const buffer = await file.arrayBuffer();
+    const uint8 = new Uint8Array(buffer);
+
+    // استخدام SheetJS لقراءة Excel
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    script.onload = () => processExcelData(uint8);
+    script.onerror = () => showToast('خطأ في تحميل مكتبة Excel', true);
+
+    if (window.XLSX) {
+      processExcelData(uint8);
+    } else {
+      document.head.appendChild(script);
+    }
+  } catch(e) {
+    showToast('خطأ في قراءة الملف: ' + e.message, true);
+  }
+}
+
+function processExcelData(uint8) {
+  try {
+    const workbook = XLSX.read(uint8, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    // تخطي أول 3 صفوف (عنوان + تعليمات + headers) وابدأ من صف 4
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+    // الصف 4 هو أول صف بيانات (index 3) - تخطي صفوف التعليمات والمثال
+    const dataRows = rows.slice(3).filter(row => row[0] && String(row[0]).trim() !== '');
+
+    if (dataRows.length === 0) {
+      showToast('مفيش بيانات في الملف! تأكد إنك حذفت صف المثال وضفت بيانات', true);
+      return;
+    }
+
+    const newCourses = [];
+    const maxId = courses.length ? Math.max(...courses.map(c => c.id)) : 0;
+
+    dataRows.forEach((row, idx) => {
+      const parseInstallment = (val) => {
+        if (!val) return null;
+        const parts = String(val).split('|');
+        if (parts.length < 3) return null;
+        return { num: parts[0].trim(), when: parts[1].trim(), amount: parts[2].trim() };
+      };
+
+      const parseLecturer = (val) => {
+        if (!val) return null;
+        const parts = String(val).split('|');
+        return {
+          name: parts[0]?.trim() || '',
+          specialty: parts[1]?.trim() || '',
+          bio: parts[2]?.trim() || '',
+          image: parts[3]?.trim() || ''
+        };
+      };
+
+      const parseAccred = (val) => {
+        if (!val) return null;
+        const parts = String(val).split('|');
+        return {
+          name: parts[0]?.trim() || '',
+          fee: parts[1]?.trim() || '',
+          desc: parts[2]?.trim() || '',
+          image: parts[3]?.trim() || ''
+        };
+      };
+
+      const installments = [
+        parseInstallment(row[17]), // R
+        parseInstallment(row[18]), // S
+        parseInstallment(row[19]), // T
+        parseInstallment(row[20]), // U
+      ].filter(Boolean);
+
+      const lecturers = [
+        parseLecturer(row[31]), // AF
+        parseLecturer(row[32]), // AG
+        parseLecturer(row[33]), // AH
+      ].filter(i => i && i.name);
+
+      const externalAccred = [
+        parseAccred(row[35]), // AJ
+        parseAccred(row[36]), // AK
+        parseAccred(row[37]), // AL
+      ].filter(i => i && i.name);
+
+      const course = {
+        id: maxId + idx + 1,
+        name: String(row[0] || '').trim(),
+        booking: String(row[1] || '').trim(),
+        priceEgypt: String(row[2] || '').trim(),
+        priceForeign: String(row[3] || '').trim(),
+        priceUSD: String(row[4] || '').trim(),
+        duration: String(row[5] || '').trim(),
+        lectures: String(row[6] || '').trim(),
+        earlyBookingDeadline: String(row[7] || '').trim(),
+        introLectureDate: String(row[8] || '').trim(),
+        mainLectureDate: String(row[9] || '').trim(),
+        courseFileLink: String(row[10] || '').trim(),
+        affiliateFileLink: String(row[11] || '').trim(),
+        courseScheduleLink: String(row[12] || '').trim(),
+        lastIntroLectureLink: String(row[13] || '').trim(),
+        practicalSampleLink: String(row[14] || '').trim(),
+        feedbackLink: String(row[15] || '').trim(),
+        graduationLink: String(row[16] || '').trim(),
+        installments,
+        theory: {
+          mode: String(row[21] || '').trim(),
+          day: String(row[22] || '').trim(),
+          time: String(row[23] || '').trim(),
+          duration: String(row[24] || '').trim(),
+          structure: String(row[25] || '').trim(),
+        },
+        practical: {
+          location: String(row[26] || '').trim(),
+          time: String(row[27] || '').trim(),
+          lectures: String(row[28] || '').trim(),
+          duration: String(row[29] || '').trim(),
+          content: String(row[30] || '').trim(),
+        },
+        lecturers,
+        zewailAccred: String(row[34] || '').trim(),
+        externalAccred,
+        targetAudience: String(row[38] || '').trim(),
+        syndicate: {
+          specialist: String(row[39] || '').trim(),
+          technician: String(row[40] || '').trim(),
+        },
+        centerLicense: String(row[41] || '').trim(),
+        generalNotes: String(row[42] || '').trim(),
+        departments: [],
+      };
+
+      newCourses.push(course);
+    });
+
+    if (newCourses.length === 0) {
+      showToast('مفيش بيانات صالحة في الملف', true);
+      return;
+    }
+
+    if (!confirm(`هيتم إضافة ${newCourses.length} دبلومة جديدة. متأكد؟`)) return;
+
+    // إضافة الدبلومات الجديدة للقائمة الحالية
+    courses = [...courses, ...newCourses];
+    saveCourses();
+    rebuildDropdown();
+    showToast(`✅ تم استيراد ${newCourses.length} دبلومة بنجاح!`);
+
+  } catch(e) {
+    showToast('خطأ في معالجة الملف: ' + e.message, true);
+    console.error(e);
+  }
+}
 
 // ============ INIT ============
 // Wait for Firebase then load
