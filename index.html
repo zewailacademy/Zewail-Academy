@@ -746,18 +746,24 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
 .dept-name { font-weight: 700; font-size: 16px; color: var(--ink); }
 .dept-name::before { content: '👤'; margin-left: 6px; }
 .dept-role { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
-.dept-phone-btn {
-  background: var(--blue);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 14px;
+.dept-phone-num { font-size: 13px; color: var(--blue); font-weight: 700; margin-top: 4px; direction: ltr; text-align: right; }
+.dept-contact-btns { display: flex; gap: 8px; }
+.dept-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
   text-decoration: none;
-  white-space: nowrap;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
-.dept-phone-btn:hover { background: var(--accent); transform: scale(1.05); }
+.dept-btn.call { background: #e3f2fd; }
+.dept-btn.call:hover { background: var(--blue); transform: scale(1.1); }
+.dept-btn.whats { background: #e8f5e9; }
+.dept-btn.whats:hover { background: #25d366; transform: scale(1.1); }
 
 /* ===== Image upload in repeaters ===== */
 .repeater-img-row {
@@ -838,6 +844,47 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
   font-size: 24px;
   cursor: pointer;
 }
+
+/* ===== Accordion ===== */
+.section.accordion {
+  padding: 0;
+  overflow: hidden;
+}
+.section.accordion h3 {
+  margin-bottom: 0;
+  padding: 18px 20px;
+  border-bottom: none;
+  transition: background 0.2s;
+  user-select: none;
+}
+.section.accordion h3:hover { background: #fafbfc; }
+.section.accordion .accordion-arrow {
+  margin-right: auto;
+  font-size: 14px;
+  color: var(--accent);
+  transition: transform 0.3s;
+}
+.section.accordion.open .accordion-arrow { transform: rotate(180deg); }
+.section.accordion .accordion-body {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 20px;
+  transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.35s ease;
+  overflow: hidden;
+}
+.section.accordion.open .accordion-body {
+  max-height: 5000px;
+  opacity: 1;
+  padding: 0 20px 20px;
+  border-top: 2px dashed var(--line);
+  margin-top: 0;
+  padding-top: 16px;
+}
+.section.accordion.open h3 {
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-soft) 100%);
+  color: white;
+}
+.section.accordion.open h3 .accordion-arrow { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -938,11 +985,11 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
           <div class="form-group"><label>المدة</label><input type="text" id="f_duration"></div>
         </div>
         <div class="form-row cols-2">
-          <div class="form-group"><label>السعر للمصريين</label><input type="text" id="f_priceEgypt"></div>
+          <div class="form-group"><label>سعر الدبلومة كاش</label><input type="text" id="f_priceEgypt"></div>
           <div class="form-group"><label>السعر بالتقسيط</label><input type="text" id="f_priceForeign"></div>
         </div>
         <div class="form-row cols-2">
-          <div class="form-group"><label>السعر بالدولار</label><input type="text" id="f_priceUSD"></div>
+          <div class="form-group"><label>السعر لغير المصريين بالدولار</label><input type="text" id="f_priceUSD"></div>
           <div class="form-group"><label>عدد المحاضرات</label><input type="text" id="f_lectures"></div>
         </div>
       </div>
@@ -1052,6 +1099,13 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
       <div class="form-section">
         <h4>📞 أرقام الإدارات <button type="button" class="add-item-btn" onclick="addDepartment()">+ موظف</button></h4>
         <div id="departmentsList"></div>
+      </div>
+
+      <div class="form-section">
+        <h4>📝 ملاحظات</h4>
+        <div class="form-row">
+          <div class="form-group"><label>ملاحظات عامة (تظهر في نهاية صفحة الدبلومة)</label><textarea id="f_generalNotes" rows="4"></textarea></div>
+        </div>
       </div>
 
     </div>
@@ -1532,6 +1586,8 @@ function migrateCourse(c) {
   if (c.graduationLink === undefined) c.graduationLink = '';
   // v8 departments array
   if (c.departments === undefined) c.departments = [];
+  // v9 general notes
+  if (c.generalNotes === undefined) c.generalNotes = '';
   // v8 add image field to lecturers
   if (Array.isArray(c.lecturers)) {
     c.lecturers.forEach(l => { if (l.image === undefined) l.image = ''; });
@@ -1647,7 +1703,7 @@ function displayCourse(id) {
     `;
   }
   const allLinks = [
-    linkCard(c.courseFileLink, '📄', 'ملف الدبلومة', 'اضغط لفتح الملف'),
+    linkCard(c.courseFileLink, '📄', 'ملف الدبلومة للأكاديمية', 'اضغط لفتح الملف'),
     linkCard(c.affiliateFileLink, '📈', 'ملف الدبلومة لـ Affiliate Marketing', 'اضغط لفتح الملف'),
     linkCard(c.courseScheduleLink, '📊', 'جدول الدبلومة', 'اضغط لفتح الجدول'),
     linkCard(c.lastIntroLectureLink, '🎤', 'آخر محاضرة تعريفية', 'اضغط للمشاهدة'),
@@ -1675,17 +1731,17 @@ function displayCourse(id) {
 
       ${datesSection}
 
-      ${linksSection}
-
       <div class="section">
         <h3><span class="emoji">💰</span> الأسعار والحجز</h3>
         <div class="info-grid">
           <div class="info-item"><span class="label">قيمة الحجز</span><span class="value highlight">${escapeHTML(c.booking)}</span></div>
-          <div class="info-item"><span class="label">السعر للمصريين</span><span class="value price">${escapeHTML(c.priceEgypt)}</span></div>
+          <div class="info-item"><span class="label">سعر الدبلومة كاش</span><span class="value price">${escapeHTML(c.priceEgypt)}</span></div>
           <div class="info-item"><span class="label">السعر بالتقسيط</span><span class="value price">${escapeHTML(c.priceForeign)}</span></div>
-          <div class="info-item"><span class="label">بالدولار</span><span class="value price">${escapeHTML(c.priceUSD)}</span></div>
+          <div class="info-item"><span class="label">السعر لغير المصريين بالدولار</span><span class="value price">${escapeHTML(c.priceUSD)}</span></div>
         </div>
       </div>
+
+      ${linksSection}
 
       <div class="section">
         <h3><span class="emoji">📅</span> الأقساط</h3>
@@ -1784,24 +1840,80 @@ function displayCourse(id) {
       ${(c.departments && c.departments.length > 0) ? `
       <div class="section dept-section">
         <h3><span class="emoji">📞</span> أرقام الإدارات</h3>
-        ${c.departments.map(d => `
+        ${c.departments.map((d) => `
           <div class="dept-card">
             <div class="dept-info">
               <div class="dept-name">${escapeHTML(d.name)}</div>
               ${d.role ? `<div class="dept-role">${escapeHTML(d.role)}</div>` : ''}
+              ${d.phone ? `<div class="dept-phone-num">${escapeHTML(d.phone)}</div>` : ''}
             </div>
-            ${d.phone ? `<a href="tel:${escapeAttr(d.phone)}" class="dept-phone-btn">📱 ${escapeHTML(d.phone)}</a>` : ''}
+            ${d.phone ? `
+            <div class="dept-contact-btns">
+              <a href="tel:${escapeAttr(normalizePhone(d.phone))}" class="dept-btn call" title="مكالمة">📞</a>
+              <a href="https://wa.me/${escapeAttr(toWhatsappNumber(d.phone))}" target="_blank" rel="noopener" class="dept-btn whats" title="واتساب">💬</a>
+            </div>
+            ` : ''}
           </div>
         `).join('')}
+      </div>
+      ` : ''}
+
+      ${c.generalNotes ? `
+      <div class="section">
+        <h3><span class="emoji">📝</span> ملاحظات</h3>
+        <div class="content-list">${escapeHTML(c.generalNotes)}</div>
       </div>
       ` : ''}
     </div>
   `;
   out.innerHTML = html;
+  convertSectionsToAccordion();
   out.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ============ MODAL ============
+// ============ ACCORDION ============
+function convertSectionsToAccordion() {
+  const out = document.getElementById('output');
+  const display = out.querySelector('.course-display');
+  if (!display) return;
+  // Get all direct .section children (skip the title card)
+  const sections = Array.from(display.children).filter(el => el.classList.contains('section'));
+  sections.forEach((section, idx) => {
+    const h3 = section.querySelector('h3');
+    if (!h3) return;
+    // Mark as accordion
+    section.classList.add('accordion');
+    // Move all content except h3 into a body wrapper
+    const body = document.createElement('div');
+    body.className = 'accordion-body';
+    // Move siblings of h3 into body
+    const children = Array.from(section.children).filter(ch => ch !== h3);
+    children.forEach(ch => body.appendChild(ch));
+    section.appendChild(body);
+    // Add toggle arrow to header
+    const arrow = document.createElement('span');
+    arrow.className = 'accordion-arrow';
+    arrow.innerHTML = '▼';
+    h3.appendChild(arrow);
+    // Click handler
+    h3.style.cursor = 'pointer';
+    h3.addEventListener('click', function(e) {
+      // Don't toggle if clicking an admin button inside header (none here, but safe)
+      const isOpen = section.classList.contains('open');
+      // Close all
+      sections.forEach(s => s.classList.remove('open'));
+      // Open this one if it was closed
+      if (!isOpen) {
+        section.classList.add('open');
+        setTimeout(() => {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    });
+  });
+  // Open the first section by default
+  if (sections.length > 0) sections[0].classList.add('open');
+}
 function openAddModal() {
   if (!requireAdmin()) return;
   editingId = null;
@@ -1819,7 +1931,8 @@ function openAddModal() {
     departments: [],
     targetAudience: '',
     syndicate: { specialist: '', technician: '' },
-    centerLicense: ''
+    centerLicense: '',
+    generalNotes: ''
   });
   document.getElementById('editModal').classList.add('active');
 }
@@ -1872,6 +1985,8 @@ function fillForm(c) {
   document.getElementById('f_synd_specialist').value = c.syndicate?.specialist || '';
   document.getElementById('f_synd_technician').value = c.syndicate?.technician || '';
   document.getElementById('f_centerLicense').value = c.centerLicense || '';
+
+  document.getElementById('f_generalNotes').value = c.generalNotes || '';
 
   renderInstallments(c.installments || []);
   renderLecturers(c.lecturers || []);
@@ -2174,7 +2289,8 @@ function saveCourse() {
       specialist: document.getElementById('f_synd_specialist').value,
       technician: document.getElementById('f_synd_technician').value
     },
-    centerLicense: document.getElementById('f_centerLicense').value
+    centerLicense: document.getElementById('f_centerLicense').value,
+    generalNotes: document.getElementById('f_generalNotes').value
   };
 
   if (editingId) {
@@ -2278,6 +2394,27 @@ function openImageViewer(src) {
 }
 function closeImageViewer() {
   document.getElementById('imageViewer').classList.remove('active');
+}
+
+// ============ CONTACT OPTIONS ============
+function normalizePhone(phone) {
+  // Remove spaces, dashes, parentheses
+  let p = String(phone).replace(/[\s\-()]/g, '');
+  // Convert Arabic-Indic digits to Western
+  const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+  p = p.replace(/[٠-٩]/g, d => arabicDigits.indexOf(d));
+  return p;
+}
+
+function toWhatsappNumber(phone) {
+  let p = normalizePhone(phone);
+  // Remove leading + or 00
+  p = p.replace(/^\+/, '').replace(/^00/, '');
+  // If Egyptian local number starting with 0 (e.g. 01012345678), convert to 20...
+  if (p.startsWith('0')) {
+    p = '20' + p.substring(1);
+  }
+  return p;
 }
 
 // ============ INIT ============
