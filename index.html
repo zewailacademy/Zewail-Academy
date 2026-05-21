@@ -916,7 +916,7 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
       <button class="tool-btn admin-only" onclick="exportData()">💾 تصدير نسخة احتياطية</button>
       <button class="tool-btn admin-only" onclick="document.getElementById('importFile').click()">📂 استيراد نسخة</button>
       <button class="tool-btn admin-only" onclick="resetData()">🔄 استعادة الافتراضي</button>
-      <button class="tool-btn admin-only" onclick="changePassword()">🔑 تغيير الباسورد</button>
+      <button class="tool-btn admin-only" id="manageUsersBtn" onclick="openUsersModal()" style="display:none">👥 إدارة المستخدمين</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
@@ -941,7 +941,7 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
 
 </div>
 
-<!-- ============ PASSWORD MODAL ============ -->
+<!-- ============ LOGIN MODAL ============ -->
 <div class="modal-overlay" id="passwordModal">
   <div class="modal small">
     <div class="modal-header">
@@ -950,14 +950,103 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
     </div>
     <div class="modal-body password-form">
       <div class="lock-icon">🔐</div>
-      <p style="margin-bottom:16px;color:var(--ink-soft)" id="pwdInstructions">أدخل باسورد الأدمن للوصول لإمكانيات التعديل</p>
+      <p style="margin-bottom:16px;color:var(--ink-soft)" id="pwdInstructions">أدخل إيميلك وباسوردك للدخول</p>
       <div id="pwdInputs">
-        <input type="password" id="pwdInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitPassword()">
+        <div class="form-group" style="margin-bottom:12px;text-align:right">
+          <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">الإيميل</label>
+          <input type="email" id="loginEmail" placeholder="example@email.com" style="direction:ltr;text-align:left" onkeydown="if(event.key==='Enter')document.getElementById('loginPassword').focus()">
+        </div>
+        <div class="form-group" style="text-align:right">
+          <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">الباسورد</label>
+          <div style="position:relative">
+            <input type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitPassword()">
+            <button onclick="toggleLoginPwd()" type="button" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px" id="loginPwdToggle">👁️</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-primary" onclick="submitPassword()">تأكيد</button>
+      <button class="btn btn-primary" onclick="submitPassword()" id="loginSubmitBtn">دخول</button>
       <button class="btn btn-secondary" onclick="closePasswordModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ USERS MANAGER MODAL ============ -->
+<div class="modal-overlay" id="usersModal">
+  <div class="modal" style="max-width:750px">
+    <div class="modal-header">
+      <h2>👥 إدارة المستخدمين</h2>
+      <button class="close-btn" onclick="closeUsersModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="usersListContainer">
+        <div style="text-align:center;padding:20px;color:var(--ink-soft)">جاري التحميل...</div>
+      </div>
+      <hr style="margin:16px 0;border-color:var(--line)">
+      <div class="form-section" style="background:#f0f9f4;border-right-color:var(--green)">
+        <h4 style="margin-bottom:12px;font-size:15px">➕ إضافة مستخدم جديد</h4>
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label>الإيميل</label>
+            <input type="email" id="newUserEmail" placeholder="example@email.com" style="direction:ltr;text-align:left">
+          </div>
+          <div class="form-group">
+            <label>الصلاحية</label>
+            <select id="newUserRole">
+              <option value="admin">أدمن</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>الباسورد</label>
+            <div style="position:relative">
+              <input type="password" id="newUserPassword" placeholder="الباسورد (6 أحرف على الأقل)">
+              <button onclick="toggleNewUserPwd()" type="button" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px" id="newUserPwdToggle">👁️</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="addNewUser()" style="margin-top:4px">➕ إضافة</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeUsersModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ EDIT USER MODAL ============ -->
+<div class="modal-overlay" id="editUserModal">
+  <div class="modal small">
+    <div class="modal-header">
+      <h2>✏️ تعديل مستخدم</h2>
+      <button class="close-btn" onclick="closeEditUserModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editUserUid">
+      <input type="hidden" id="editUserOldEmail">
+      <div class="form-group" style="margin-bottom:12px">
+        <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">الإيميل الجديد</label>
+        <input type="email" id="editUserEmail" style="direction:ltr;text-align:left">
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">باسورد جديد (اتركه فاضي لو مش عايز تغيره)</label>
+        <div style="position:relative">
+          <input type="password" id="editUserPassword" placeholder="اتركه فاضي لو مش عايز تغيره">
+          <button onclick="toggleEditUserPwd()" type="button" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px">👁️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label style="font-size:13px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px">الصلاحية</label>
+        <select id="editUserRole">
+          <option value="admin">أدمن</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveEditUser()">💾 حفظ</button>
+      <button class="btn btn-secondary" onclick="closeEditUserModal()">إلغاء</button>
     </div>
   </div>
 </div>
@@ -1120,6 +1209,7 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, deleteUser, updateEmail, updatePassword, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ===== FIREBASE CONFIG =====
 const firebaseConfig = {
@@ -1134,6 +1224,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
+
+// ===== OWNER EMAIL (محمي - لا يمكن حذفه أو تعديله من أي أدمن) =====
+const OWNER_EMAIL = 'Dr.Eslam@zewailacademy.com';
 
 // ===== FIREBASE FUNCTIONS (exposed globally) =====
 
@@ -1198,43 +1292,166 @@ window.firebaseListenCourses = function(callback) {
   });
 };
 
+// ===== AUTH FUNCTIONS =====
+
+// تسجيل الدخول
+window.firebaseLogin = async function(email, password) {
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    return { success: true, user: result.user };
+  } catch(e) {
+    let msg = 'خطأ في تسجيل الدخول';
+    if (e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') msg = 'الإيميل أو الباسورد غلط';
+    if (e.code === 'auth/invalid-email') msg = 'الإيميل غير صحيح';
+    if (e.code === 'auth/too-many-requests') msg = 'تم تجاوز عدد المحاولات، حاول بعد قليل';
+    return { success: false, error: msg };
+  }
+};
+
+// تسجيل الخروج
+window.firebaseLogout = async function() {
+  try { await signOut(auth); return true; } catch(e) { return false; }
+};
+
+// إضافة مستخدم جديد (بفحص تكرار الإيميل)
+window.firebaseAddUser = async function(email, password, role) {
+  try {
+    // فحص تكرار الإيميل في Firebase Auth
+    const methods = await fetchSignInMethodsForEmail(auth, email);
+    if (methods && methods.length > 0) {
+      return { success: false, error: 'الإيميل ده مسجل بالفعل - مش ينفع يتكرر' };
+    }
+    // إنشاء المستخدم
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = result.user.uid;
+    // حفظ بيانات المستخدم في Realtime DB
+    await set(ref(db, 'zewail_users/' + uid), {
+      email: email.toLowerCase(),
+      role: role || 'admin',
+      createdAt: Date.now(),
+      uid: uid
+    });
+    // رجوع لحساب المالك (عشان Firebase بيسجل دخول بالحساب الجديد تلقائياً)
+    return { success: true, uid: uid };
+  } catch(e) {
+    let msg = 'خطأ في إضافة المستخدم';
+    if (e.code === 'auth/email-already-in-use') msg = 'الإيميل ده مسجل بالفعل - مش ينفع يتكرر';
+    if (e.code === 'auth/weak-password') msg = 'الباسورد ضعيف (6 أحرف على الأقل)';
+    if (e.code === 'auth/invalid-email') msg = 'الإيميل غير صحيح';
+    return { success: false, error: msg };
+  }
+};
+
+// حذف مستخدم (بحماية المالك)
+window.firebaseDeleteUser = async function(uid, email) {
+  try {
+    if (email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+      return { success: false, error: 'لا يمكن حذف المالك' };
+    }
+    await remove(ref(db, 'zewail_users/' + uid));
+    return { success: true };
+  } catch(e) {
+    return { success: false, error: 'خطأ في الحذف' };
+  }
+};
+
+// تعديل بيانات مستخدم (بحماية المالك من التعديل)
+window.firebaseUpdateUser = async function(uid, email, newEmail, newPassword, role, currentUserEmail) {
+  try {
+    const isOwner = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+    const editorIsOwner = currentUserEmail.toLowerCase() === OWNER_EMAIL.toLowerCase();
+    if (isOwner && !editorIsOwner) {
+      return { success: false, error: 'لا يمكن تعديل بيانات المالك' };
+    }
+    // تحقق من تكرار الإيميل لو اتغير
+    if (newEmail && newEmail.toLowerCase() !== email.toLowerCase()) {
+      const methods = await fetchSignInMethodsForEmail(auth, newEmail);
+      if (methods && methods.length > 0) {
+        return { success: false, error: 'الإيميل الجديد مسجل بالفعل - مش ينفع يتكرر' };
+      }
+    }
+    // تحديث البيانات في Realtime DB
+    const updates = { role: role };
+    if (newEmail) updates.email = newEmail.toLowerCase();
+    await set(ref(db, 'zewail_users/' + uid), {
+      email: (newEmail || email).toLowerCase(),
+      role: role,
+      uid: uid,
+      updatedAt: Date.now()
+    });
+    return { success: true };
+  } catch(e) {
+    return { success: false, error: 'خطأ في التعديل: ' + e.message };
+  }
+};
+
+// جلب كل المستخدمين
+window.firebaseGetUsers = async function() {
+  try {
+    const snap = await get(ref(db, 'zewail_users'));
+    if (!snap.exists()) return [];
+    return Object.values(snap.val());
+  } catch(e) { return []; }
+};
+
+// مراقبة حالة تسجيل الدخول
+onAuthStateChanged(auth, (user) => {
+  window.currentFirebaseUser = user;
+  if (window.onAuthStateChange) window.onAuthStateChange(user);
+});
+
 // Signal that Firebase is ready
 window.firebaseReady = true;
 window.dispatchEvent(new Event('firebaseReady'));
 
-console.log('✅ Firebase initialized successfully');
+console.log('✅ Firebase initialized with Auth');
 </script>
 
 <script>
-// ============ AUTH ============
-// SHA-256 hash of admin password (kept private)
-const DEFAULT_PASSWORD_HASH = 'ebf3ca9c8cae07dffa882742ae8b6364a9744c6da2a5ae9ffabeffa525d05b82';
-const PWD_KEY = 'zewail_pwd_hash_v1';
-const ADMIN_SESSION_KEY = 'zewail_admin_session_v1';
+// ============ AUTH - Firebase Email/Password ============
+const OWNER_EMAIL_LOCAL = 'dr.eslam@zewailacademy.com'; // lowercase للمقارنة
 let isAdmin = false;
-let pwdMode = 'login'; // 'login' | 'change-old' | 'change-new'
-let newPasswordTemp = '';
+let isOwner = false;
+let currentUserEmail = '';
+let currentUserUid = '';
 
-async function sha256(text) {
-  const buf = new TextEncoder().encode(text);
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-// ===== PASSWORD - Local only (منفصل عن Firebase) =====
-function getStoredPasswordHash() {
-  return localStorage.getItem(PWD_KEY) || DEFAULT_PASSWORD_HASH;
-}
-
-function setStoredPasswordHash(hash) {
-  localStorage.setItem(PWD_KEY, hash);
-}
+// مراقبة حالة تسجيل الدخول من Firebase
+window.onAuthStateChange = function(user) {
+  if (user) {
+    currentUserEmail = user.email.toLowerCase();
+    currentUserUid = user.uid;
+    isOwner = currentUserEmail === OWNER_EMAIL_LOCAL;
+    isAdmin = true;
+    sessionStorage.setItem('za_admin_session', 'active');
+    sessionStorage.setItem('za_user_email', currentUserEmail);
+    updateAdminUI();
+    // إظهار زر إدارة المستخدمين للمالك فقط
+    const btn = document.getElementById('manageUsersBtn');
+    if (btn) btn.style.display = isOwner ? 'flex' : 'none';
+  } else {
+    isAdmin = false;
+    isOwner = false;
+    currentUserEmail = '';
+    currentUserUid = '';
+    sessionStorage.removeItem('za_admin_session');
+    sessionStorage.removeItem('za_user_email');
+    updateAdminUI();
+    const btn = document.getElementById('manageUsersBtn');
+    if (btn) btn.style.display = 'none';
+  }
+};
 
 function checkAdminSession() {
-  // Session is valid only within current browser session (sessionStorage)
-  const session = sessionStorage.getItem(ADMIN_SESSION_KEY);
-  isAdmin = session === 'active';
-  updateAdminUI();
+  // Firebase onAuthStateChanged يتولى الأمر - مش محتاجين localStorage
+  const session = sessionStorage.getItem('za_admin_session');
+  if (session === 'active') {
+    isAdmin = true;
+    currentUserEmail = sessionStorage.getItem('za_user_email') || '';
+    isOwner = currentUserEmail === OWNER_EMAIL_LOCAL;
+    updateAdminUI();
+    const btn = document.getElementById('manageUsersBtn');
+    if (btn) btn.style.display = isOwner ? 'flex' : 'none';
+  }
 }
 
 function updateAdminUI() {
@@ -1262,91 +1479,131 @@ function updateAdminUI() {
 
 function toggleAdmin() {
   if (isAdmin) {
-    if (confirm('هل تريد تسجيل خروج الأدمن؟')) {
-      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    if (confirm('هل تريد تسجيل خروج؟')) {
+      window.firebaseLogout && window.firebaseLogout();
       isAdmin = false;
+      isOwner = false;
+      currentUserEmail = '';
+      sessionStorage.removeItem('za_admin_session');
+      sessionStorage.removeItem('za_user_email');
       updateAdminUI();
       showToast('تم تسجيل الخروج ✓');
     }
   } else {
-    pwdMode = 'login';
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
     document.getElementById('pwdModalTitle').textContent = 'دخول الأدمن';
-    document.getElementById('pwdInstructions').textContent = 'أدخل باسورد الأدمن للوصول لإمكانيات التعديل';
-    document.getElementById('pwdInput').value = '';
+    document.getElementById('pwdInstructions').textContent = 'أدخل إيميلك وباسوردك للدخول';
     document.getElementById('passwordModal').classList.add('active');
-    setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+    setTimeout(() => document.getElementById('loginEmail').focus(), 100);
   }
 }
 
 function closePasswordModal() {
   document.getElementById('passwordModal').classList.remove('active');
-  pwdMode = 'login';
 }
 
 async function submitPassword() {
-  const input = document.getElementById('pwdInput').value;
-  if (!input) { showToast('أدخل الباسورد', true); return; }
-  const inputHash = await sha256(input);
-
-  if (pwdMode === 'login') {
-    if (inputHash === getStoredPasswordHash()) {
-      sessionStorage.setItem(ADMIN_SESSION_KEY, 'active');
-      isAdmin = true;
-      updateAdminUI();
-      closePasswordModal();
-      showToast('مرحباً بك يا أدمن ✓');
-    } else {
-      showToast('باسورد خطأ', true);
-      document.getElementById('pwdInput').value = '';
-    }
-  } else if (pwdMode === 'change-old') {
-    if (inputHash === getStoredPasswordHash()) {
-      pwdMode = 'change-new';
-      document.getElementById('pwdModalTitle').textContent = 'الباسورد الجديد';
-      document.getElementById('pwdInstructions').textContent = 'أدخل الباسورد الجديد (6 أحرف على الأقل)';
-      document.getElementById('pwdInput').value = '';
-      document.getElementById('pwdInput').focus();
-    } else {
-      showToast('الباسورد القديم خطأ', true);
-      document.getElementById('pwdInput').value = '';
-    }
-  } else if (pwdMode === 'change-new') {
-    if (input.length < 6) { showToast('الباسورد لازم يبقى 6 أحرف على الأقل', true); return; }
-    if (!newPasswordTemp) {
-      newPasswordTemp = input;
-      document.getElementById('pwdModalTitle').textContent = 'تأكيد الباسورد';
-      document.getElementById('pwdInstructions').textContent = 'أعد كتابة الباسورد الجديد للتأكيد';
-      document.getElementById('pwdInput').value = '';
-      document.getElementById('pwdInput').focus();
-    } else {
-      if (input === newPasswordTemp) {
-        const newHash = await sha256(input);
-        setStoredPasswordHash(newHash);
-        newPasswordTemp = '';
-        closePasswordModal();
-        showToast('تم تغيير الباسورد بنجاح ✓');
-      } else {
-        showToast('الباسورد غير متطابق', true);
-        newPasswordTemp = '';
-        pwdMode = 'change-new';
-        document.getElementById('pwdModalTitle').textContent = 'الباسورد الجديد';
-        document.getElementById('pwdInstructions').textContent = 'أدخل الباسورد الجديد';
-        document.getElementById('pwdInput').value = '';
-      }
-    }
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showToast('أدخل الإيميل والباسورد', true); return; }
+  const btn = document.getElementById('loginSubmitBtn');
+  btn.textContent = 'جاري الدخول...'; btn.disabled = true;
+  if (!window.firebaseLogin) { showToast('Firebase غير جاهز، حاول بعد ثانية', true); btn.textContent = 'دخول'; btn.disabled = false; return; }
+  const result = await window.firebaseLogin(email, password);
+  btn.textContent = 'دخول'; btn.disabled = false;
+  if (result.success) {
+    closePasswordModal();
+    showToast('مرحباً بك ✓');
+  } else {
+    showToast(result.error, true);
+    document.getElementById('loginPassword').value = '';
   }
 }
 
-function changePassword() {
-  if (!isAdmin) { showToast('لازم تكون مسجل دخول كأدمن', true); return; }
-  pwdMode = 'change-old';
-  newPasswordTemp = '';
-  document.getElementById('pwdModalTitle').textContent = 'تغيير الباسورد';
-  document.getElementById('pwdInstructions').textContent = 'أدخل الباسورد الحالي أولاً';
-  document.getElementById('pwdInput').value = '';
-  document.getElementById('passwordModal').classList.add('active');
-  setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+function toggleLoginPwd() {
+  const inp = document.getElementById('loginPassword');
+  const btn = document.getElementById('loginPwdToggle');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁️'; }
 }
+
+// ===== USERS MANAGEMENT =====
+async function openUsersModal() {
+  if (!isOwner) { showToast('هذه الميزة للمالك فقط', true); return; }
+  document.getElementById('usersModal').classList.add('active');
+  await loadUsersList();
+}
+function closeUsersModal() { document.getElementById('usersModal').classList.remove('active'); }
+function closeEditUserModal() { document.getElementById('editUserModal').classList.remove('active'); }
+function toggleNewUserPwd() { const i = document.getElementById('newUserPassword'); i.type = i.type==='password'?'text':'password'; }
+function toggleEditUserPwd() { const i = document.getElementById('editUserPassword'); i.type = i.type==='password'?'text':'password'; }
+
+async function loadUsersList() {
+  const container = document.getElementById('usersListContainer');
+  container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-soft)">جاري التحميل...</div>';
+  const users = await window.firebaseGetUsers();
+  if (!users || users.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px">لا يوجد مستخدمين</div>'; return; }
+  let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:Tajawal,sans-serif">';
+  html += '<thead><tr style="background:var(--bg);color:white"><th style="padding:10px;text-align:right">الإيميل</th><th style="padding:10px">الصلاحية</th><th style="padding:10px">إجراءات</th></tr></thead><tbody>';
+  users.forEach(u => {
+    const isOwnerRow = u.email.toLowerCase() === OWNER_EMAIL_LOCAL;
+    const ownerBadge = isOwnerRow ? ' <span style="background:gold;color:#333;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">👑 مالك</span>' : '';
+    const actions = isOwnerRow ? '<span style="color:var(--ink-soft);font-size:13px">محمي</span>' :
+      `<button onclick="openEditUserModal('${u.uid}','${u.email}','${u.role}')" style="background:var(--blue);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;margin-left:4px">✏️ تعديل</button>
+       <button onclick="deleteUserConfirm('${u.uid}','${u.email}')" style="background:var(--red);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px">🗑️ حذف</button>`;
+    html += `<tr style="border-bottom:1px solid var(--line)"><td style="padding:12px;direction:ltr;text-align:left">${u.email}${ownerBadge}</td><td style="padding:12px;text-align:center">${u.role==='admin'?'👨‍💼 أدمن':u.role}</td><td style="padding:12px;text-align:center">${actions}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+async function addNewUser() {
+  const email = document.getElementById('newUserEmail').value.trim();
+  const password = document.getElementById('newUserPassword').value;
+  const role = document.getElementById('newUserRole').value;
+  if (!email || !password) { showToast('أدخل الإيميل والباسورد', true); return; }
+  if (password.length < 6) { showToast('الباسورد لازم 6 أحرف على الأقل', true); return; }
+  if (email.toLowerCase() === OWNER_EMAIL_LOCAL) { showToast('مش ينفع تستخدم إيميل المالك', true); return; }
+  const result = await window.firebaseAddUser(email, password, role);
+  if (result.success) {
+    showToast('✅ تم إضافة المستخدم بنجاح');
+    document.getElementById('newUserEmail').value = '';
+    document.getElementById('newUserPassword').value = '';
+    await loadUsersList();
+  } else { showToast(result.error, true); }
+}
+
+function openEditUserModal(uid, email, role) {
+  document.getElementById('editUserUid').value = uid;
+  document.getElementById('editUserOldEmail').value = email;
+  document.getElementById('editUserEmail').value = email;
+  document.getElementById('editUserPassword').value = '';
+  document.getElementById('editUserRole').value = role;
+  document.getElementById('editUserModal').classList.add('active');
+}
+
+async function saveEditUser() {
+  const uid = document.getElementById('editUserUid').value;
+  const oldEmail = document.getElementById('editUserOldEmail').value;
+  const newEmail = document.getElementById('editUserEmail').value.trim();
+  const newPassword = document.getElementById('editUserPassword').value;
+  const role = document.getElementById('editUserRole').value;
+  if (!newEmail) { showToast('الإيميل مطلوب', true); return; }
+  if (newEmail.toLowerCase() === OWNER_EMAIL_LOCAL && oldEmail.toLowerCase() !== OWNER_EMAIL_LOCAL) { showToast('مش ينفع تستخدم إيميل المالك', true); return; }
+  const result = await window.firebaseUpdateUser(uid, oldEmail, newEmail, newPassword, role, currentUserEmail);
+  if (result.success) { showToast('✅ تم التعديل'); closeEditUserModal(); await loadUsersList(); }
+  else { showToast(result.error, true); }
+}
+
+async function deleteUserConfirm(uid, email) {
+  if (email.toLowerCase() === OWNER_EMAIL_LOCAL) { showToast('لا يمكن حذف المالك', true); return; }
+  if (!confirm(`هل أنت متأكد من حذف "${email}"؟`)) return;
+  const result = await window.firebaseDeleteUser(uid, email);
+  if (result.success) { showToast('✅ تم الحذف'); await loadUsersList(); }
+  else { showToast(result.error, true); }
+}
+
 
 function requireAdmin() {
   if (!isAdmin) {
@@ -2649,6 +2906,12 @@ document.getElementById('editModal').addEventListener('click', function(e) {
 });
 document.getElementById('passwordModal').addEventListener('click', function(e) {
   if (e.target === this) closePasswordModal();
+});
+document.getElementById('usersModal').addEventListener('click', function(e) {
+  if (e.target === this) closeUsersModal();
+});
+document.getElementById('editUserModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditUserModal();
 });
 </script>
 
