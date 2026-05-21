@@ -1705,10 +1705,15 @@ let _firebaseListenerActive = false;
 async function loadCourses() {
   showLoadingIndicator(true);
   try {
-    // Try Firebase first
+    // Try Firebase first (with 5 second timeout)
     if (window.firebaseReady) {
-      const fbCourses = await window.firebaseLoadCourses();
+      const fbCourses = await Promise.race([
+        window.firebaseLoadCourses(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+      ]);
+
       if (fbCourses && fbCourses.length > 0) {
+        // Firebase has data - use it
         courses = fbCourses;
         courses.forEach(migrateCourse);
         showLoadingIndicator(false);
@@ -1716,27 +1721,54 @@ async function loadCourses() {
         showToast('✅ تم تحميل البيانات من Firebase');
         startFirebaseListener();
         return;
-      }
-    }
-    // Fallback to localStorage
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      courses = JSON.parse(saved);
-      courses.forEach(migrateCourse);
-      // Upload localStorage data to Firebase
-      if (window.firebaseReady) {
-        await window.firebaseSaveCourses(courses);
-        showToast('✅ تم رفع البيانات المحلية على Firebase');
+      } else {
+        // Firebase is empty - check localStorage then use defaults
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          courses = JSON.parse(saved);
+          courses.forEach(migrateCourse);
+          // Upload local data to Firebase
+          await window.firebaseSaveCourses(courses);
+          showToast('✅ تم رفع البيانات على Firebase');
+        } else {
+          // Load defaults and save to Firebase
+          courses = JSON.parse(JSON.stringify(defaultCourses));
+          courses.forEach(migrateCourse);
+          await window.firebaseSaveCourses(courses);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
+          showToast('✅ تم تهيئة قاعدة البيانات');
+        }
+        startFirebaseListener();
       }
     } else {
-      courses = JSON.parse(JSON.stringify(defaultCourses));
-      courses.forEach(migrateCourse);
-      await saveCourses();
+      // Firebase not available - use localStorage or defaults
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        courses = JSON.parse(saved);
+        courses.forEach(migrateCourse);
+      } else {
+        courses = JSON.parse(JSON.stringify(defaultCourses));
+        courses.forEach(migrateCourse);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
+      }
     }
   } catch(e) {
     console.error('loadCourses error:', e);
-    courses = JSON.parse(JSON.stringify(defaultCourses));
-    courses.forEach(migrateCourse);
+    // Any error - fall back to localStorage then defaults
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        courses = JSON.parse(saved);
+        courses.forEach(migrateCourse);
+        showToast('⚠️ Firebase غير متاح - تم التحميل من الذاكرة المحلية');
+      } else {
+        courses = JSON.parse(JSON.stringify(defaultCourses));
+        courses.forEach(migrateCourse);
+      }
+    } catch(e2) {
+      courses = JSON.parse(JSON.stringify(defaultCourses));
+      courses.forEach(migrateCourse);
+    }
   }
   showLoadingIndicator(false);
   rebuildDropdown();
