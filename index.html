@@ -1221,28 +1221,13 @@ async function sha256(text) {
   return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-// ===== PASSWORD - Firebase backed =====
-async function getStoredPasswordHash() {
-  // Priority: localStorage (changed password) → Firebase → DEFAULT
-  const localHash = localStorage.getItem(PWD_KEY);
-  if (localHash) return localHash;
-
-  if (window.firebaseReady) {
-    try {
-      const fbHash = await window.firebaseGetPassword();
-      if (fbHash) return fbHash;
-    } catch(e) { /* ignore */ }
-  }
-
-  return DEFAULT_PASSWORD_HASH;
+// ===== PASSWORD - Local only (منفصل عن Firebase) =====
+function getStoredPasswordHash() {
+  return localStorage.getItem(PWD_KEY) || DEFAULT_PASSWORD_HASH;
 }
 
-async function setStoredPasswordHash(hash) {
-  // Save to Firebase + localStorage as backup
+function setStoredPasswordHash(hash) {
   localStorage.setItem(PWD_KEY, hash);
-  if (window.firebaseReady) {
-    await window.firebaseSavePassword(hash);
-  }
 }
 
 function checkAdminSession() {
@@ -1304,7 +1289,7 @@ async function submitPassword() {
   const inputHash = await sha256(input);
 
   if (pwdMode === 'login') {
-    if (inputHash === await getStoredPasswordHash()) {
+    if (inputHash === getStoredPasswordHash()) {
       sessionStorage.setItem(ADMIN_SESSION_KEY, 'active');
       isAdmin = true;
       updateAdminUI();
@@ -1315,7 +1300,7 @@ async function submitPassword() {
       document.getElementById('pwdInput').value = '';
     }
   } else if (pwdMode === 'change-old') {
-    if (inputHash === await getStoredPasswordHash()) {
+    if (inputHash === getStoredPasswordHash()) {
       pwdMode = 'change-new';
       document.getElementById('pwdModalTitle').textContent = 'الباسورد الجديد';
       document.getElementById('pwdInstructions').textContent = 'أدخل الباسورد الجديد (6 أحرف على الأقل)';
@@ -1336,7 +1321,7 @@ async function submitPassword() {
     } else {
       if (input === newPasswordTemp) {
         const newHash = await sha256(input);
-        await setStoredPasswordHash(newHash);
+        setStoredPasswordHash(newHash);
         newPasswordTemp = '';
         closePasswordModal();
         showToast('تم تغيير الباسورد بنجاح ✓');
