@@ -1116,6 +1116,95 @@ textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-seri
   </div>
 </div>
 
+<!-- ======= FIREBASE SDK ======= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ===== FIREBASE CONFIG =====
+const firebaseConfig = {
+  apiKey: "AIzaSyAhNnTtKeYwLkjvMWdecPbcjh9hYv_WC30",
+  authDomain: "zewail-academy.firebaseapp.com",
+  projectId: "zewail-academy",
+  storageBucket: "zewail-academy.firebasestorage.app",
+  messagingSenderId: "102448777377",
+  appId: "1:102448777377:web:ac9051f2423e8ae24c08e0",
+  databaseURL: "https://zewail-academy-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ===== FIREBASE FUNCTIONS (exposed globally) =====
+
+// Save all courses to Firebase
+window.firebaseSaveCourses = async function(courses) {
+  try {
+    const coursesObj = {};
+    courses.forEach(c => { coursesObj['course_' + c.id] = c; });
+    await set(ref(db, 'zewail_courses'), coursesObj);
+    return true;
+  } catch(e) {
+    console.error('Firebase save error:', e);
+    return false;
+  }
+};
+
+// Save password hash to Firebase
+window.firebaseSavePassword = async function(hash) {
+  try {
+    await set(ref(db, 'zewail_settings/pwd_hash'), hash);
+    return true;
+  } catch(e) {
+    console.error('Firebase pwd save error:', e);
+    return false;
+  }
+};
+
+// Get password hash from Firebase
+window.firebaseGetPassword = async function() {
+  try {
+    const snap = await get(ref(db, 'zewail_settings/pwd_hash'));
+    return snap.exists() ? snap.val() : null;
+  } catch(e) {
+    console.error('Firebase pwd get error:', e);
+    return null;
+  }
+};
+
+// Load all courses from Firebase
+window.firebaseLoadCourses = async function() {
+  try {
+    const snap = await get(ref(db, 'zewail_courses'));
+    if (!snap.exists()) return null;
+    const data = snap.val();
+    const courses = Object.values(data);
+    courses.sort((a, b) => a.id - b.id);
+    return courses;
+  } catch(e) {
+    console.error('Firebase load error:', e);
+    return null;
+  }
+};
+
+// Listen for real-time changes (optional - for multi-user)
+window.firebaseListenCourses = function(callback) {
+  onValue(ref(db, 'zewail_courses'), (snap) => {
+    if (!snap.exists()) { callback([]); return; }
+    const data = snap.val();
+    const courses = Object.values(data);
+    courses.sort((a, b) => a.id - b.id);
+    callback(courses);
+  });
+};
+
+// Signal that Firebase is ready
+window.firebaseReady = true;
+window.dispatchEvent(new Event('firebaseReady'));
+
+console.log('✅ Firebase initialized successfully');
+</script>
+
 <script>
 // ============ AUTH ============
 // SHA-256 hash of admin password (kept private)
@@ -1132,12 +1221,22 @@ async function sha256(text) {
   return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-function getStoredPasswordHash() {
+// ===== PASSWORD - Firebase backed =====
+async function getStoredPasswordHash() {
+  // Try Firebase first, fallback to localStorage
+  if (window.firebaseReady) {
+    const fbHash = await window.firebaseGetPassword();
+    if (fbHash) return fbHash;
+  }
   return localStorage.getItem(PWD_KEY) || DEFAULT_PASSWORD_HASH;
 }
 
-function setStoredPasswordHash(hash) {
+async function setStoredPasswordHash(hash) {
+  // Save to Firebase + localStorage as backup
   localStorage.setItem(PWD_KEY, hash);
+  if (window.firebaseReady) {
+    await window.firebaseSavePassword(hash);
+  }
 }
 
 function checkAdminSession() {
@@ -1199,7 +1298,7 @@ async function submitPassword() {
   const inputHash = await sha256(input);
 
   if (pwdMode === 'login') {
-    if (inputHash === getStoredPasswordHash()) {
+    if (inputHash === await getStoredPasswordHash()) {
       sessionStorage.setItem(ADMIN_SESSION_KEY, 'active');
       isAdmin = true;
       updateAdminUI();
@@ -1210,7 +1309,7 @@ async function submitPassword() {
       document.getElementById('pwdInput').value = '';
     }
   } else if (pwdMode === 'change-old') {
-    if (inputHash === getStoredPasswordHash()) {
+    if (inputHash === await getStoredPasswordHash()) {
       pwdMode = 'change-new';
       document.getElementById('pwdModalTitle').textContent = 'الباسورد الجديد';
       document.getElementById('pwdInstructions').textContent = 'أدخل الباسورد الجديد (6 أحرف على الأقل)';
@@ -1231,7 +1330,7 @@ async function submitPassword() {
     } else {
       if (input === newPasswordTemp) {
         const newHash = await sha256(input);
-        setStoredPasswordHash(newHash);
+        await setStoredPasswordHash(newHash);
         newPasswordTemp = '';
         closePasswordModal();
         showToast('تم تغيير الباسورد بنجاح ✓');
@@ -1599,32 +1698,111 @@ function migrateCourse(c) {
   return c;
 }
 
-function loadCourses() {
+
+// ============ STORAGE - Firebase =============
+let _firebaseListenerActive = false;
+
+async function loadCourses() {
+  showLoadingIndicator(true);
   try {
+    // Try Firebase first
+    if (window.firebaseReady) {
+      const fbCourses = await window.firebaseLoadCourses();
+      if (fbCourses && fbCourses.length > 0) {
+        courses = fbCourses;
+        courses.forEach(migrateCourse);
+        showLoadingIndicator(false);
+        rebuildDropdown();
+        showToast('✅ تم تحميل البيانات من Firebase');
+        startFirebaseListener();
+        return;
+      }
+    }
+    // Fallback to localStorage
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       courses = JSON.parse(saved);
       courses.forEach(migrateCourse);
+      // Upload localStorage data to Firebase
+      if (window.firebaseReady) {
+        await window.firebaseSaveCourses(courses);
+        showToast('✅ تم رفع البيانات المحلية على Firebase');
+      }
     } else {
       courses = JSON.parse(JSON.stringify(defaultCourses));
       courses.forEach(migrateCourse);
-      saveCourses();
+      await saveCourses();
     }
   } catch(e) {
+    console.error('loadCourses error:', e);
     courses = JSON.parse(JSON.stringify(defaultCourses));
     courses.forEach(migrateCourse);
   }
+  showLoadingIndicator(false);
+  rebuildDropdown();
 }
 
-function saveCourses() {
+async function saveCourses() {
+  // Save to Firebase
+  let savedToFirebase = false;
+  if (window.firebaseReady) {
+    savedToFirebase = await window.firebaseSaveCourses(courses);
+  }
+  // Always backup to localStorage
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
-  } catch(e) {
-    showToast('خطأ في الحفظ: ' + e.message, true);
+  } catch(e) { /* ignore localStorage errors */ }
+
+  if (!savedToFirebase) {
+    showToast('⚠️ تحذير: Firebase غير متصل - تم الحفظ محلياً فقط', true);
   }
 }
 
-// ============ DROPDOWN ============
+function startFirebaseListener() {
+  if (_firebaseListenerActive) return;
+  _firebaseListenerActive = true;
+  // Listen for real-time changes from other devices
+  window.firebaseListenCourses((newCourses) => {
+    if (!newCourses || newCourses.length === 0) return;
+    // Only update if data changed (avoid loop)
+    const newStr = JSON.stringify(newCourses.map(c => c.id));
+    const oldStr = JSON.stringify(courses.map(c => c.id));
+    if (newStr !== oldStr || JSON.stringify(newCourses) !== JSON.stringify(courses)) {
+      courses = newCourses;
+      courses.forEach(migrateCourse);
+      const sel = document.getElementById('courseSelect');
+      const currentVal = sel ? sel.value : '';
+      rebuildDropdown();
+      if (currentVal) {
+        document.getElementById('courseSelect').value = currentVal;
+        displayCourse(currentVal);
+      }
+    }
+  });
+}
+
+function showLoadingIndicator(show) {
+  let indicator = document.getElementById('firebaseLoadingIndicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'firebaseLoadingIndicator';
+    indicator.style.cssText = `
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      background: #0a2463; color: white; padding: 10px 20px; border-radius: 30px;
+      font-family: Tajawal, sans-serif; font-size: 14px; font-weight: 600;
+      z-index: 9999; display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    `;
+    document.body.appendChild(indicator);
+  }
+  if (show) {
+    indicator.innerHTML = '🔄 جاري التحميل من Firebase...';
+    indicator.style.display = 'flex';
+  } else {
+    indicator.style.display = 'none';
+  }
+}
+
 function rebuildDropdown() {
   const sel = document.getElementById('courseSelect');
   const currentVal = sel.value;
@@ -2417,10 +2595,30 @@ function toWhatsappNumber(phone) {
   return p;
 }
 
+
 // ============ INIT ============
-loadCourses();
-rebuildDropdown();
-checkAdminSession();
+// Wait for Firebase then load
+function initApp() {
+  rebuildDropdown();
+  checkAdminSession();
+  loadCourses(); // async - will show loading indicator
+}
+
+if (window.firebaseReady) {
+  initApp();
+} else {
+  // Wait for Firebase module to be ready
+  window.addEventListener('firebaseReady', initApp);
+  // Fallback: init without Firebase after 3 seconds
+  setTimeout(() => {
+    if (!window.firebaseReady) {
+      console.warn('Firebase timeout - using localStorage fallback');
+      loadCourses();
+      rebuildDropdown();
+      checkAdminSession();
+    }
+  }, 3000);
+}
 
 // Close modals on overlay click
 document.getElementById('editModal').addEventListener('click', function(e) {
